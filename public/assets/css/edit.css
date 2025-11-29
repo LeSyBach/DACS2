@@ -1,0 +1,145 @@
+:root {
+        --danger-color: #dc3545; /* Đỏ */
+        --success-color: #28a745; /* Xanh lá */
+        --background-light: #f7f7f7;
+        --border-color: #ddd;
+    }
+    
+    /* BỔ SUNG CSS CHO GRID: Đảm bảo khối chính không có padding */
+    .no-padding {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    .profile-page-wrapper {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* CONTAINER */
+    .profile-edit-card {
+        padding: 30px;
+        background-color: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        margin: 40px 0; 
+    }
+    
+    /* HEADINGS */
+    .main-heading {
+        color: #333;
+        font-size: 24px;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+    }
+
+    .main-heading i {
+        margin-right: 10px;
+        color: var(--primary-color);
+    }
+
+    .section-heading {
+        font-size: 18px;
+        margin-bottom: 20px;
+        border-bottom: 1px dashed #ccc;
+        padding-bottom: 10px;
+    }
+
+    /* MÀU SẮC CHỦ ĐẠO */
+    .primary-color { color: var(--primary-color); }
+    .danger-color { color: var(--danger-color); }
+    .required { color: var(--danger-color); }
+
+    /* ALERT (THÔNG BÁO) */
+    .alert {
+        padding: 10px 15px;
+        margin-bottom: 25px;
+        border-radius: 4px;
+        font-weight: 500;
+        color: white;
+    }
+    .success-alert {
+        background-color: var(--success-color);
+    }
+
+    /* FORM GROUPS */
+    .section-group {
+        padding: 20px;
+        border-radius: 6px;
+        margin-bottom: 30px;
+    }
+
+    /* Nhóm Thông tin */
+    .info-group {
+        border: 1px solid #eee;
+        background-color: var(--background-light);
+    }
+
+    /* Nhóm Mật khẩu */
+    .password-group {
+        border: 1px solid #faa;
+        background-color: #fff9f9;
+        margin-top: 40px;
+    }
+
+    /* INPUT STYLES */
+    .form-input-group {
+        margin-bottom: 15px;
+    }
+
+    .form-input-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        transition: border-color 0.2s;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+        border-color: var(--primary-color);
+        outline: none;
+    }
+
+    /* LỖI */
+    .input-error {
+        color: red;
+        font-size: 12px;
+        display: block;
+        margin-top: 5px;
+    }
+
+    /* BUTTONS */
+    .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background-color 0.3s;
+        color: white;
+        margin-bottom: 15px; 
+    }
+
+    .btn-primary { background-color: var(--primary-color); }
+    .btn-danger { background-color: var(--danger-color); }
+
+    .btn-primary:hover { background-color: #094b57; }
+    .btn-danger:hover { background-color: #a71d2a; }
+
+    /* MOBILE RESPONSIVENESS */
+    @media (max-width: 739px) {
+        .profile-edit-card {
+            margin: 20px 0;
+            padding: 20px;
+        }
+    }

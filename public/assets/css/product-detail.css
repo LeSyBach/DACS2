@@ -1,0 +1,305 @@
+/* --- 1. Wrapper Chung (Nền xám nhẹ để làm nổi bật thẻ sản phẩm) --- */
+.product-detail {
+    padding:20px;
+}
+.product-page {
+    background-color: #f8f9fa; /* Màu nền tổng thể sáng sủa */
+    padding: 40px 0 60px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Nút quay lại */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 20px;
+    transition: color 0.2s;
+}
+.back-btn:hover { color: #009f7f; }
+
+/* --- 2. Container chính (Khối trắng nổi bật) --- */
+.product-container {
+    background-color: #fff;
+    border-radius: 16px; /* Bo góc lớn hiện đại */
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05); /* Đổ bóng nhẹ tạo chiều sâu */
+    padding: 30px;
+    overflow: hidden;
+}
+
+/* --- 3. Gallery (Ảnh) --- */
+.gallery__main {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f4f4f4;
+    margin-bottom: 15px;
+    cursor: crosshair; /* Hiệu ứng chuột soi ảnh */
+}
+
+.gallery__img {
+    width: 100%;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.gallery__main:hover .gallery__img {
+    transform: scale(1.05); /* Zoom nhẹ khi hover */
+}
+
+.gallery__badges {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    display: flex;
+    gap: 8px;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.badge--new { background: #00c030; }
+.badge--sale { background: #ff424f; }
+
+/* Thumbnails */
+.gallery__thumbs {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.gallery__thumb {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.2s;
+}
+
+.gallery__thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.gallery__thumb:hover { opacity: 1; }
+.gallery__thumb--active {
+    border-color: #009f7f;
+    opacity: 1;
+}
+
+/* --- 4. Thông tin (Info) --- */
+.info { padding-left: 20px; }
+
+.info__cate {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.info__title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 15px;
+    line-height: 1.2;
+}
+
+.info__meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.rating { color: #ffc107; }
+.rating span { color: #666; margin-left: 5px; }
+.meta-divider { color: #ddd; }
+.status { color: #009f7f; font-weight: 600; }
+
+/* Giá tiền (Thiết kế hộp giá) */
+.price-box {
+    background: #f0fffa; /* Nền xanh nhạt cực nhẹ */
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px dashed #009f7f;
+    margin-bottom: 25px;
+}
+
+.price-box__main {
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+    margin-bottom: 5px;
+}
+
+.current-price {
+    font-size: 28px;
+    font-weight: 800;
+    color: #009f7f;
+}
+
+.old-price {
+    font-size: 16px;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.price-box__save {
+    font-size: 13px;
+    color: #007a62;
+    font-weight: 500;
+}
+
+.info__desc {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+/* --- 5. Hành động (Nút mua) --- */
+.actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    height: 50px;
+}
+
+/* Bộ chọn số lượng */
+.quantity {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.qty-btn {
+    width: 40px;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+    transition: background 0.2s;
+}
+.qty-btn:hover { background: #f5f5f5; }
+
+.qty-input {
+    width: 50px;
+    border: none;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    outline: none;
+    color: #333;
+}
+
+/* Nút Thêm vào giỏ */
+.btn-buy {
+    flex-grow: 1;
+    background-color: #009f7f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 159, 127, 0.3); /* Đổ bóng màu xanh */
+    transition: all 0.2s;
+}
+
+.btn-buy:hover {
+    background-color: #008066;
+    transform: translateY(-2px); /* Nổi lên khi hover */
+    box-shadow: 0 6px 15px rgba(0, 159, 127, 0.4);
+}
+
+/* Nút Tim */
+.btn-heart {
+    width: 50px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 8px;
+    color: #666;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-heart:hover {
+    border-color: #ff424f;
+    color: #ff424f;
+    background: #fff0f1;
+}
+
+.divider {
+    height: 1px;
+    background-color: #eee;
+    margin: 0 0 30px;
+}
+
+/* --- 6. Chính sách (Layout thẻ) --- */
+.policies {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Chia 3 cột đều nhau */
+    gap: 15px;
+}
+
+.policy-card {
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.2s;
+    background: #fafafa;
+}
+
+.policy-card:hover {
+    transform: translateY(-3px);
+    border-color: #009f7f;
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.policy-card__icon {
+    font-size: 24px;
+    color: #009f7f;
+    margin-bottom: 10px;
+}
+
+.policy-card__text h4 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+}
+
+.policy-card__text p {
+    margin: 0;
+    font-size: 11px;
+    color: #777;
+}
+
+/* Responsive Mobile */
+@media (max-width: 739px) {
+    .product-container { padding: 20px; }
+    .info { padding-left: 0; margin-top: 20px; }
+    .policies { grid-template-columns: 1fr; } /* Mobile chính sách xếp dọc */
+    .actions { flex-wrap: wrap; height: auto; }
+    .btn-buy { width: 100%; padding: 12px; order: -1; } /* Nút mua lên đầu */
+    .quantity { width: 100%; height: 40px; margin-bottom: 10px;}
+    .btn-heart { width: 100%; height: 40px;}
+}
