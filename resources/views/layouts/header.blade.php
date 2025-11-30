@@ -119,21 +119,22 @@
     </div> 
 </div> 
 
-{{-- Script đóng mở modal --}}
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        function attachCloseEvents() {
-            const modal = document.querySelector('.modal-cart');
-            const closeBtns = document.querySelectorAll('.close-modal-btn, .modal-cart__close-btn, .modal-cart__overlay');
-            const openBtn = document.querySelector('.navbar__actions-item--cart');
 
-            if(openBtn) {
-                openBtn.onclick = function() { modal.classList.remove('hidden'); }
-            }
-            closeBtns.forEach(btn => {
-                btn.onclick = function() { modal.classList.add('hidden'); }
-            });
-        }
-        attachCloseEvents();
-    });
-</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

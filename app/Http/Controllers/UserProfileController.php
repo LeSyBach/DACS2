@@ -10,21 +10,14 @@ use App\Models\User;
 
 class UserProfileController extends Controller
 {
-    /**
-     * Hiển thị form chỉnh sửa thông tin người dùng.
-     */
     public function edit()
     {
         // Lấy thông tin user hiện tại
         $user = Auth::user(); 
-        
         // Trả về view và truyền dữ liệu user
         return view('profile.edit', compact('user'));
     }
 
-    /**
-     * Xử lý cập nhật thông tin người dùng, bao gồm Địa chỉ giao hàng.
-     */
     public function update(Request $request)
     {
         /** @var \App\Models\User $user */
@@ -47,7 +40,6 @@ class UserProfileController extends Controller
         // Bỏ qua logic mật khẩu
         
         $user->save();
-
         return redirect()->route('profile.edit')->with('success', 'Thông tin và Địa chỉ giao hàng đã được cập nhật thành công!');
     }
 
@@ -77,10 +69,6 @@ class UserProfileController extends Controller
         return redirect()->route('profile.edit')->with('success', 'Mật khẩu đã được thay đổi thành công!');
     }
 
-    
-    /**
-     * Hiển thị danh sách đơn hàng của người dùng hiện tại.
-     */
     public function showOrders()
     {
         /** @var \App\Models\User $user */
@@ -89,9 +77,6 @@ class UserProfileController extends Controller
         return view('profile.orders', compact('orders'));
     }
 
-    /**
-     * Hiển thị chi tiết một đơn hàng cụ thể.
-     */
     public function showOrderDetail($id)
     {
         /** @var \App\Models\User $user */ // Khai báo biến $user là User Model

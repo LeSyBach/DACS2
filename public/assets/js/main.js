@@ -1,5 +1,15 @@
 // File: assets/js/main.js
 
+// quay lai
+
+function goBackStep() {
+    // Hàm này sẽ quay trở lại trang web trước đó trong lịch sử trình duyệt.
+    // Ví dụ: Quay lại từ Bước 2 (Thanh toán) về Bước 1 (Thông tin).
+    window.history.back();
+}
+
+
+
 // 1. Định nghĩa hàm xử lý (Logic giữ nguyên)
 function highlightActiveMenu() {
     const currentPath = window.location.pathname;
@@ -74,8 +84,22 @@ document.addEventListener("DOMContentLoaded", function() {
                     // TRƯỜNG HỢP 2: Xóa sản phẩm (khi giảm về 0)
                     else if (data.status === 'remove') {
                         document.getElementById('cart-item-' + id).remove();
-                        // Cập nhật lại tổng tiền (bạn cần sửa controller để trả về total khi remove nữa)
-                        // Hoặc đơn giản là reload nếu xóa (để reset layout)
+                        document.getElementById('cart-total').innerText = data.total;
+                        const cartNotice = document.querySelector(".navbar__cart-notice");
+                        if (cartNotice) {
+                            cartNotice.innerText = data.count;
+                            if (data.count == 0) {
+                                cartNotice.style.display = "none"; // ẩn badge khi giỏ rỗng
+                            } else {
+                                cartNotice.style.display = "inline-block";
+                            }
+                        }
+
+                        // Nếu giỏ hàng rỗng thì render giao diện trống
+                        if (data.count === 0 && data.cartHTML) {
+                            const cartBody = document.getElementById('cart-body-content');
+                            if (cartBody) cartBody.innerHTML = data.cartHTML;
+                        }
                     }
                 })
                 .catch(error => console.error('Lỗi:', error));

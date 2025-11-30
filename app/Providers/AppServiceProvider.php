@@ -6,6 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
+use App\Models\CartItem;
+use App\Models\Product;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,33 +21,64 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
-        // --- TỰ ĐỘNG TÍNH GIỎ HÀNG CHO TOÀN BỘ WEBSITE ---
-        View::composer('*', function ($view) {
-            // 1. Lấy giỏ hàng
-            $cart = Session::get('cart', []);
+        // =======================================================
+        // LOGIC CHUNG: TÍNH TOÁN GIỎ HÀNG (Cho cả Header và Modal)
+        // =======================================================
+        View::composer(['layouts.app', 'header', 'partials.header', 'partials.cart-mini'], function ($view) {
             
-            $totalPrice = 0;
-            $totalQty = 0;
+            $cartData = [];
+            $cartTotal = 0;
+            $cartCount = 0;
 
-            // 2. Tính toán
-            if(is_array($cart)) {
-                foreach ($cart as $item) {
-                    if(isset($item['price']) && isset($item['quantity'])) {
-                        $totalPrice += $item['price'] * $item['quantity'];
-                        $totalQty += $item['quantity'];
+            if (Auth::check()) {
+                // 1. NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP (LẤY TỪ DB)
+                $user = Auth::user();
+                
+                // Lấy Cart Items từ DB (kèm thông tin sản phẩm cho Modal)
+                $cartData = CartItem::where('user_id', $user->id)
+                                    ->with('product')
+                                    ->get(); 
+                                    
+                if ($cartData->isNotEmpty()) {
+                    $cartCount = $cartData->count();
+                    
+                    // Tính toán tổng tiền từ DB
+                    foreach ($cartData as $item) {
+                        $price = $item->product->price ?? 0;
+                        $cartTotal += $price * $item->quantity;
+                    }
+                }
+            } else {
+                // 2. KHÁCH VÃNG LAI (LẤY TỪ SESSION)
+                $cartData = Session::get('cart', []);
+                
+                if(is_array($cartData)) {
+                    $cartCount = count($cartData);
+                    
+                    // Tính toán tổng tiền từ Session
+                    foreach ($cartData as $item) {
+                        if(isset($item['price']) && isset($item['quantity'])) {
+                            $cartTotal += $item['price'] * $item['quantity'];
+                        }
                     }
                 }
             }
-            $cartCount=count($cart);
-
-            // 3. Chia sẻ biến sang TẤT CẢ các View
-            // Bạn có thể dùng $cart, $cartTotal, $cartCount ở bất cứ file blade nào
+            
+            // =======================================================
+            // CHIA SẺ BIẾN CHO TẤT CẢ CÁC VIEW MỤC TIÊU
+            // =======================================================
             $view->with([
-                'cart' => $cart,
-                'cartTotal' => $totalPrice,
-                // 'cartCount' => $totalQty,
-                'cartCount' => $cartCount
+                'cartData' => $cartData,
+                'cartTotal' => $cartTotal,
+                'cartCount' => $cartCount // Biến này sẽ fix lỗi mất số lượng trên Header
             ]);
         });
+        
+        // Xóa Composer cũ không cần thiết (chỉ dùng để share View::shared)
+        /*
+        View::composer(['partials.header', 'layouts.app'], function ($view) {
+             $view->with('cartCount', View::shared('cartCount', 0)); 
+        });
+        */
     }
 }

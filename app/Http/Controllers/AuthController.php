@@ -32,7 +32,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->password, // Laravel 10+ tự động Hash nếu dùng $casts = ['password' => 'hashed'] trong Model
+            'password' => $request->password,
             'role' => 'customer',
             // Thêm các cột mới (nếu bạn muốn lưu chúng khi đăng ký)
             // 'phone' => $request->phone ?? null, 
@@ -77,7 +77,6 @@ class AuthController extends Controller
 
     // --- PHẦN 2: QUÊN MẬT KHẨU (FORGOT PASSWORD LOGIC) ---
 
-    // 1. Gửi mã OTP (AJAX POST từ Form 3)
     // 1. Gửi mã OTP (AJAX POST từ Form 3)
     public function sendOtp(Request $request) 
     {

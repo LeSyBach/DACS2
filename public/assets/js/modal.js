@@ -1,16 +1,7 @@
 const btnCart = document.querySelector(".navbar__actions-item--cart");
-const modal = document.querySelector(".modal-cart");
-const closeBtn = document.querySelector(".modal-cart__close-btn");
-const overlay = document.querySelector(".modal-cart__overlay");
+const modal   = document.querySelector(".modal-cart");
 
-// Mở modal
-btnCart.addEventListener("click", function () {
-  modal.classList.remove("hidden", "hide");
-  void modal.offsetWidth; // reset animation
-  modal.classList.add("show");
-});
-
-// Đóng modal
+// Hàm đóng modal
 function closeModal() {
   modal.classList.remove("show");
   modal.classList.add("hide");
@@ -21,8 +12,23 @@ function closeModal() {
   }, 300); // khớp với thời gian transition
 }
 
-closeBtn.addEventListener("click", closeModal);
-overlay.addEventListener("click", closeModal);
+// Mở modal khi click icon giỏ hàng
+btnCart.addEventListener("click", function () {
+  modal.classList.remove("hidden", "hide");
+  void modal.offsetWidth; // reset animation
+  modal.classList.add("show");
+});
+
+// Event delegation: lắng nghe click trên body
+document.body.addEventListener("click", function (e) {
+  if (
+    e.target.closest(".modal-cart__close-btn") || // nút đóng
+    e.target.closest(".modal-cart__overlay")     || // overlay
+    e.target.closest(".close-modal-btn")      // nút tiếp tục mua sắm (nếu có)
+  ) {
+    closeModal();
+  }
+});
 // auth
 // Lấy phần tử chính
 document.addEventListener("DOMContentLoaded", function() {

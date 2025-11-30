@@ -23,11 +23,9 @@
                         </div>
                     @endif --}}
                     
-                    
                     {{-- =============================================== --}}
                     {{-- 1. FORM CẬP NHẬT THÔNG TIN & ĐỊA CHỈ --}}
-                    {{-- Gửi đến route('profile.update') --}}
-                    {{-- =============================================== --}}
+
                     <form method="POST" action="{{ route('profile.update') }}">
                         @csrf
                         
@@ -87,8 +85,6 @@
 
                     {{-- =============================================== --}}
                     {{-- 2. FORM ĐỔI MẬT KHẨU --}}
-                    {{-- Gửi đến route('profile.password') --}}
-                    {{-- =============================================== --}}
                     <form method="POST" action="{{ route('profile.password') }}">
                         @csrf
                         <div class="section-group password-group">

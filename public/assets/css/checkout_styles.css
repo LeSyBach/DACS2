@@ -1,0 +1,428 @@
+/* FILE: public/css/checkout_styles.css */
+
+/* ======================================================== */
+/* 0. BIẾN VÀ CẤU HÌNH CHUNG */
+/* ======================================================== */
+:root {
+    --color-primary: #009689; /* MÀU XANH NGỌC CHỦ ĐẠO */
+    --color-primary-dark: #1a9c7b; 
+    --color-danger: #dc3545;
+    --color-bg-light:#f2fdfb; /* Nền trang */
+    --color-border-card: #96f7e4; /* Border nhẹ của card */
+    --color-input-bg: #f0fdfa; /* Nền input */
+    --color-text: #333;
+}
+
+body {
+    background-color: var(--color-bg-light);
+}
+.checkout-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+.back-link {
+    color: var(--color-primary); 
+    text-decoration: none; 
+    font-weight: 500; 
+    margin-bottom: 20px; 
+    display: inline-block;
+    padding-left: 10px;
+    padding:20px
+}
+
+/* ======================================================== */
+/* 1. THANH TIẾN TRÌNH (STEPS BAR) */
+/* ======================================================== */
+.checkout-steps-bar {
+    margin: 30px auto; 
+    max-width: 800px;
+    display: flex;
+    justify-content: center;
+}
+.step-item {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    flex: 1;
+}
+.step-icon {
+    width: 30px; 
+    height: 30px; 
+    border-radius: 50%; 
+    color: white; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    font-weight: bold; 
+    margin-bottom: 5px;
+    background-color: var(--color-border-card);
+    transition: background-color 0.3s;
+}
+.step-item--active .step-icon,
+.step-item--completed .step-icon {
+    background-color: var(--color-primary);
+}
+.step-label {
+    font-size: 14px; 
+    font-weight: 600;
+}
+.step-connector {
+    flex-grow: 1; 
+    height: 2px; 
+    background-color: #ccc;
+    margin-top: 15px;
+    transition: background-color 0.3s;
+}
+.step-item--completed + .step-connector {
+    background-color: var(--color-primary);
+}
+
+/* ======================================================== */
+/* 2. CARD CHUNG (FORM VÀ SUMMARY) */
+/* ======================================================== */
+
+.checkout-card {
+    background-color: #fff;
+    border: 1px solid var(--color-border-card);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
+
+.card-title {
+    font-size: 20px;
+    color: var(--color-text);
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* ======================================================== */
+/* 3. INPUT VÀ FORM */
+/* ======================================================== */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--color-text);
+    font-size: 14px;
+}
+
+.form-input, .form-textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--color-border-card);
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    background-color: var(--color-input-bg);
+    font-size: 16px;
+    color: var(--color-text);
+}
+
+.form-input:focus, .form-textarea:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    background-color: #fff;
+    box-shadow: 0 0 0 2px rgba(32, 201, 151, 0.3);
+}
+
+.input-error {
+    color: var(--color-danger);
+    font-size: 12px;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Grid fixes for form internal columns */
+.info-form-row {
+    margin-left: -10px;
+    margin-right: -10px;
+}
+.info-form-row > .col {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* ======================================================== */
+/* 4. SUMMARY (SIDEBAR) STYLES */
+/* ======================================================== */
+
+.checkout-summary-card {
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-top: 30px; /* Căn chỉnh với form */
+}
+.summary-total {
+    color: var(--color-primary) !important;
+    font-size: 18px !important;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+}
+.summary-details span {
+    color: var(--color-text) !important;
+}
+
+
+/* ======================================================== */
+/* 5. BUTTONS */
+/* ======================================================== */
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 15px;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-dark);
+}
+
+/* ======================================================== */
+/* 6. PAYMENT PAGE STYLES (Bước 2) */
+/* ======================================================== */
+
+.payment-options__option {
+    border: 2px solid var(--color-border-card);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: all 0.2s;
+}
+.payment-options__option--selected {
+    border-color: var(--color-primary);
+    background-color: #f0fff7; /* Nền xanh nhạt khi chọn */
+}
+.payment-options__radio {
+    margin-right: 15px;
+    transform: scale(1.2);
+}
+.payment-options__label {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.payment-content-wrapper {
+    /* Khối bên phải chứa COD/QR code */
+    padding-left: 30px !important; 
+}
+@media (max-width: 1112px) {
+    .payment-content-wrapper {
+        padding-left: 10px !important;
+        margin-top: 20px; 
+    }
+}
+
+/* ... (Các khối CSS khác giữ nguyên) ... */
+
+/* ======================================================== */
+/* 1. THANH TIẾN TRÌNH (STEPS BAR) */
+/* ======================================================== */
+.checkout-steps-bar {
+    margin: 30px auto; 
+    max-width: 800px;
+    display: flex;
+    justify-content: center;
+}
+.step-item {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    flex: 1;
+}
+.step-icon {
+    width: 30px; 
+    height: 30px; 
+    border-radius: 50%; 
+    color: white; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    font-weight: bold; 
+    margin-bottom: 5px;
+    background-color: var(--color-border-card);
+    transition: background-color 0.3s;
+}
+
+/* Thêm logic màu sắc cho icon và label (sử dụng màu từ Blade) */
+.step-item--active .step-icon,
+.step-item--completed .step-icon {
+    background-color: var(--color-primary);
+}
+.step-label {
+    font-size: 14px; 
+    font-weight: 600;
+    /* Cần màu sắc phù hợp ở đây, sẽ được set trong Blade dựa trên status */
+}
+
+.step-connector {
+    flex-grow: 1; 
+    height: 2px; 
+    background-color: #ccc;
+    margin-top: 15px;
+    transition: background-color 0.3s;
+}
+.step-item--completed + .step-connector {
+    background-color: var(--color-primary);
+}
+
+/* ... (các khối CSS khác giữ nguyên) ... */
+
+/* ======================================================== */
+/* 4. SUMMARY (SIDEBAR) STYLES - BỔ SUNG */
+/* ======================================================== */
+
+.checkout-summary-card {
+    background-color: #fff; /* Nền trắng như mẫu */
+    border: 1px solid var(--color-border-card);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    padding: 20px;
+    margin-top: 30px; 
+}
+.summary-product-list {
+    list-style: none; 
+    padding: 0; 
+    margin-bottom: 15px;
+}
+.summary-product-item {
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 14px; 
+    margin-bottom: 5px;
+    color: var(--color-text-light);
+}
+.summary-product-name, .summary-product-price {
+    font-weight: 500;
+    color: var(--color-text);
+}
+.summary-details {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.summary-row {
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 14px; 
+    margin-bottom: 5px;
+}
+.summary-total {
+    /* Đã được định nghĩa ở khối chung, chỉ cần đảm bảo style */
+    color: var(--color-primary) !important;
+    font-size: 18px !important;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+}
+.summary-divider {
+    margin: 15px 0;
+    border-top: 1px solid #eee;
+}
+
+
+/* ... (Các khối CSS khác giữ nguyên) ... */
+
+/* ======================================================== */
+/* 7. COD CONTENT BLOCK (COD Details) */
+/* ======================================================== */
+
+.payment-content-block {
+    padding: 20px;
+    text-align: center;
+    /* KHÔNG có background-color ở đây vì card cha đã có nền trắng */
+}
+
+.cod-header {
+    margin-bottom: 15px;
+}
+.cod-header__icon {
+    font-size: 32px;
+    color: #20c997; 
+}
+
+.cod-content__heading {
+    color: #20c997; 
+    margin-bottom: 5px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.cod-content__delivery-info {
+    font-size: 14px;
+    color: var(--color-text-light);
+    margin-bottom: 25px;
+}
+
+/* KHỐI HIỂN THỊ TỔNG TIỀN */
+.cod-content__money-box {
+    background-color: #f0fff7; /* Nền xanh nhạt */
+    border: 1px solid #96f7e4; /* Border xanh ngọc nhạt */
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+.cod-content__money-icon {
+    color: #ff9800; 
+    margin-right: 8px;
+    font-size: 18px;
+}
+.cod-content__money-label {
+    font-weight: 600;
+    color: var(--color-text);
+    display: block;
+    margin-bottom: 8px;
+}
+.cod-content__total-amount {
+    font-size: 28px;
+    font-weight: bold;
+    color: #20c997; /* Màu xanh ngọc */
+    margin-bottom: 10px;
+}
+.cod-content__money-text {
+    font-size: 14px;
+    color: var(--color-text-light);
+}
+
+/* KHỐI LƯU Ý (WARNING BOX) */
+.cod-content__warning-box {
+    background-color: #fff8e1; /* Nền vàng nhạt */
+    border: 1px solid #ffe0b2; /* Border vàng cam */
+    border-radius: 8px;
+    padding: 15px;
+    text-align: left;
+    margin-top: 20px;
+}
+.cod-content__warning-label {
+    font-weight: bold;
+    color: #ff9800; /* Màu cam */
+    margin-right: 5px;
+}
+.cod-content__warning-text {
+    font-size: 14px;
+    color: var(--color-text);
+}
