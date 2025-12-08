@@ -11,7 +11,7 @@ use App\Models\CartItem;
 use App\Models\User;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
-
+use App\Services\ZaloPayService; // Đã sẵn sàng cho API
 
 class CheckoutController extends Controller
 {
@@ -20,24 +20,18 @@ class CheckoutController extends Controller
      */
     public function showCheckoutForm()
     {
-        // 1. Lấy Giỏ hàng (DB nếu đăng nhập, Session nếu là khách)
         $cartItems = Auth::check() 
             ? CartItem::where('user_id', Auth::id())->with('product')->get()
             : session()->get('cart', []);
 
         if (empty($cartItems) || (is_object($cartItems) && $cartItems->isEmpty()) || count($cartItems) == 0) {
-            // Chuyển hướng về trang giỏ hàng (nếu bạn có route này)
             return redirect()->route('index')->with('error', 'Giỏ hàng của bạn đang trống!'); 
         }
 
-        // 2. Lấy thông tin khách hàng mặc định (điền sẵn form)
-        // Nếu không đăng nhập, tạo một User rỗng để tránh lỗi truy cập thuộc tính
         $defaultData = Auth::check() ? Auth::user() : new User(); 
+        $subtotal = $this->calculateCartTotal($cartItems); 
 
-        // 3. Tính tổng tiền cho View Summary
-        $total = $this->calculateCartTotal($cartItems); 
-
-        return view('checkout.information', compact('cartItems', 'defaultData', 'total'));
+        return view('checkout.information', compact('cartItems', 'defaultData', 'subtotal'));
     }
 
     /**
@@ -45,7 +39,6 @@ class CheckoutController extends Controller
      */
     public function processInformation(Request $request)
     {
-        // 1. Validation Thông tin
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
@@ -53,7 +46,6 @@ class CheckoutController extends Controller
             'address' => 'required|string|max:255',
         ]);
         
-        // 2. Lưu tạm thông tin vào session để sử dụng ở bước 2
         session()->put('checkout_info', $validated);
 
         return redirect()->route('checkout.payment');
@@ -65,37 +57,25 @@ class CheckoutController extends Controller
      */
     public function showPaymentForm()
     {
-        // Đảm bảo thông tin nhận hàng đã có trong session
         if (!session()->has('checkout_info')) {
             return redirect()->route('checkout.show')->with('error', 'Vui lòng nhập thông tin giao hàng trước.');
         }
         
-        // Lấy lại giỏ hàng để hiển thị tóm tắt
         $cartItems = Auth::check() 
             ? CartItem::where('user_id', Auth::id())->with('product')->get()
             : session()->get('cart', []);
 
-        // 1. Tính tổng tiền Tạm tính (Subtotal)
         $subtotal = $this->calculateCartTotal($cartItems);
+        $shippingFee = 30000; 
+        
+        // Tính Grand Total (Không tính thuế)
+        $grandTotal = $subtotal + $shippingFee;
 
-        // 2. Định nghĩa các phí/thuế (Bạn có thể sửa số này theo logic kinh doanh của mình)
-        $shippingFee = 30000; // Phí vận chuyển cố định 30,000 ₫ (Ví dụ)
-        $taxRate = 0.10;      // Thuế GTGT 10% (Ví dụ)
-
-        // 3. Tính toán Thuế GTGT
-        // Thuế được tính trên (Tạm tính + Phí vận chuyển)
-        $vat = ($subtotal + $shippingFee) * $taxRate;
-
-        // 4. Tính Tổng tiền cuối cùng cần thanh toán (Grand Total)
-        $grandTotal = $subtotal + $shippingFee + $vat;
-
-        // 5. Truyền tất cả các biến cần thiết sang view
         return view('checkout.payment', compact(
             'cartItems', 
             'subtotal', 
             'shippingFee', 
-            'vat', 
-            'grandTotal' // <--- BIẾN QUAN TRỌNG NHẤT
+            'grandTotal'
         ));
     }
 
@@ -103,60 +83,74 @@ class CheckoutController extends Controller
      * BƯỚC 3: Xử lý ĐẶT HÀNG VÀ THANH TOÁN (Lưu vào DB và Xử lý ZaloPay).
      */
     public function placeOrder(Request $request)
-    {
-        $paymentMethod = $request->input('payment_method');
-        $checkoutInfo = session()->get('checkout_info');
-        $userId = Auth::id();
+{
+    $paymentMethod = $request->input('payment_method');
+    $checkoutInfo = session()->get('checkout_info');
+    $userId = Auth::id();
 
-        // 1. Validation BƯỚC 2
-        $request->validate([
-            'payment_method' => 'required|in:cod,zalopay',
-        ]);
-        
-        // 2. Lấy Giỏ hàng (DB hoặc Session)
-        $cartItems = $userId 
-            ? CartItem::where('user_id', $userId)->with('product')->get()
-            : session()->get('cart', []);
+    // 1. Validation BƯỚC 2
+    $request->validate(['payment_method' => 'required|in:cod,zalopay',]);
+    
+    // 2. Lấy Giỏ hàng (DB hoặc Session)
+    $cartItems = $userId 
+        ? CartItem::where('user_id', $userId)->with('product')->get()
+        : session()->get('cart', []);
 
-        if (empty($cartItems)) {
-            return redirect()->route('checkout.show')->with('error', 'Giỏ hàng bị trống!');
-        }
-
-        // 3. Xử lý Transaction
-        try {
-            DB::beginTransaction();
-
-            // Tính tổng tiền và tạo Order Items
-            $order = $this->createOrderAndItems($userId, $checkoutInfo, $cartItems, $paymentMethod);
-            
-            // 4. Dọn dẹp Giỏ hàng
-            $this->cleanUpCart($userId);
-            
-            DB::commit();
-
-            // 5. Xử lý thanh toán ZaloPay
-            if ($paymentMethod === 'zalopay') {
-                // (Chức năng gọi API ZaloPay và chuyển hướng sẽ được đặt tại đây)
-                // Hiện tại, chúng ta chỉ chuyển hướng đến trang Thành công
-                return redirect()->route('checkout.success', ['order_id' => $order->id]);
-            }
-            
-            // 6. Hoàn thành cho COD
-            return redirect()->route('checkout.success', ['order_id' => $order->id]);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Order Placement Failed: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Có lỗi xảy ra trong quá trình đặt hàng. Vui lòng thử lại.');
-        }
+    if (empty($cartItems)) {
+        return redirect()->route('checkout.show')->with('error', 'Giỏ hàng bị trống!');
     }
 
-    /**
-     * BƯỚC 4: Trang Xác nhận/Cảm ơn
-     */
+    // 3. TÍNH TOÁN GRAND TOTAL (Cho tính toàn vẹn)
+    $subtotal = $this->calculateCartTotal($cartItems);
+    $shippingFee = 30000; 
+    $grandTotal = $subtotal + $shippingFee;
+
+    // 4. Xử lý Transaction
+    try {
+        DB::beginTransaction();
+
+        // 4.1. TẠO ORDER CHÍNH và Order Items (Chỉ lưu vào DB tạm thời)
+        $order = $this->createOrderAndItems($userId, $checkoutInfo, $cartItems, $paymentMethod, $grandTotal);
+        
+        // 4.2. Xử lý thanh toán ZaloPay (Nếu thất bại, sẽ Rollback)
+        if ($paymentMethod === 'zalopay') {
+            $zalopayService = new ZaloPayService();
+            $zalopayResponse = $zalopayService->createOrderPayment($order); // Gửi API ZaloPay
+            
+            // 4.3. Kiểm tra phản hồi ZaloPay
+            if (isset($zalopayResponse['return_code']) && $zalopayResponse['return_code'] === 1) {
+                // THÀNH CÔNG API: Chuyển hướng người dùng đến URL thanh toán
+                
+                // 4.4. Dọn dẹp Giỏ hàng và Commit DB
+                $this->cleanUpCart($userId);
+                DB::commit(); 
+                
+                return redirect()->away($zalopayResponse['order_url']);
+            } else {
+                // THẤT BẠI API: Rollback DB và giữ lại Giỏ hàng Session
+                DB::rollBack(); 
+                Log::error('ZaloPay Create Order Failed: ' . ($zalopayResponse['return_message'] ?? 'Unknown API error'));
+                return redirect()->route('checkout.payment')->with('error', 'Lỗi kết nối ZaloPay. Vui lòng thử lại hoặc chọn COD.');
+            }
+        }
+        
+        // 4.5. XỬ LÝ COD: Hoàn thành, dọn dẹp và Commit
+        $this->cleanUpCart($userId);
+        DB::commit();
+        
+        // Hoàn thành cho COD
+        return redirect()->route('checkout.success', ['order_id' => $order->id]);
+
+    } catch (\Exception $e) {
+        // 5. Xử lý lỗi hệ thống (như lỗi DB, lỗi code)
+        DB::rollBack();
+        Log::error('Order Placement Failed: ' . $e->getMessage());
+        return redirect()->back()->withInput()->with('error', 'Có lỗi xảy ra trong quá trình đặt hàng. Vui lòng thử lại.');
+    }
+}
+
     public function thankYou($order_id)
     {
-        // Lấy đơn hàng và truyền sang View
         $order = Order::findOrFail($order_id);
         return view('checkout.success', compact('order'));
     }
@@ -181,11 +175,9 @@ class CheckoutController extends Controller
         return $total;
     }
 
-    private function createOrderAndItems($userId, $checkoutInfo, $cartItems, $paymentMethod)
+    private function createOrderAndItems($userId, $checkoutInfo, $cartItems, $paymentMethod, $grandTotal)
     {
-        $totalAmount = 0;
-        
-        // 1. Tạo Order chính
+        // 1. Tạo Order chính (Gán đủ các cột bắt buộc)
         $order = Order::create([
             'user_id' => $userId,
             'customer_name' => $checkoutInfo['name'],
@@ -193,31 +185,33 @@ class CheckoutController extends Controller
             'customer_email' => $checkoutInfo['email'],
             'shipping_address' => $checkoutInfo['address'],
             'payment_method' => $paymentMethod,
-            'total_price' => 0, 
+            'total_price' => $grandTotal, // <-- LƯU GRAND TOTAL
             'status' => ($paymentMethod === 'cod') ? 'pending' : 'pending_payment', 
             'payment_status' => ($paymentMethod === 'cod') ? 'unpaid' : 'pending',
         ]);
 
-        // 2. Chuyển Cart Items thành Order Items và tính tổng tiền
+        // 2. Chuyển Cart Items thành Order Items
         $orderItemsData = [];
         foreach ($cartItems as $item) {
-            // Lấy dữ liệu cho DB Item hay Session Item
             $price = is_object($item) ? ($item->product->price ?? 0) : $item['price'];
             $quantity = is_object($item) ? $item->quantity : $item['quantity'];
             $productId = is_object($item) ? $item->product_id : $item['product_id'];
 
-            $totalAmount += $price * $quantity;
+            // LẤY TÊN SẢN PHẨM: Cần thiết vì cột product_name là NOT NULL
+            $productName = is_object($item) 
+                ? ($item->product->name ?? 'Sản phẩm không rõ') 
+                : ($item['name'] ?? 'Sản phẩm không rõ'); 
             
             $orderItemsData[] = new OrderItem([
                 'product_id' => $productId,
+                'product_name' => $productName, 
                 'quantity' => $quantity,
                 'price' => $price,
             ]);
         }
 
-        // 3. Lưu Order Items và cập nhật tổng tiền
+        // 3. Lưu Order Items
         $order->items()->saveMany($orderItemsData); 
-        $order->update(['total_price' => $totalAmount]); 
 
         return $order;
     }
@@ -230,6 +224,4 @@ class CheckoutController extends Controller
             session()->forget('cart');
         }
     }
-
-    
 }

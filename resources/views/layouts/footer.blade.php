@@ -72,7 +72,7 @@
                                     <a href="#" class="footer__policy-link">Chính sách bảo mật</a>
                                     <a href="#" class="footer__policy-link">Điều khoản dịch vụ</a>
                                     <a href="#" class="footer__policy-link">Cookies</a>
-                                    <a href="#" class="footer__admin-btn">Admin</a>
+                                    <a href="{{ route('admin.login') }}" class="footer__admin-btn">Admin</a>
                                 </div>
                             </div>
                         </div>

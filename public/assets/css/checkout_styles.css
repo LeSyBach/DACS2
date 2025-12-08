@@ -426,3 +426,93 @@ body {
     font-size: 14px;
     color: var(--color-text);
 }
+
+/* ======================================================== */
+/* 9. SUCCESS PAGE STYLES (Trang Cảm ơn) */
+/* ======================================================== */
+
+.success-page-wrapper {
+    text-align: center; 
+    padding: 50px 0;
+}
+
+.success-card {
+    /* Kế thừa từ .checkout-card */
+    margin: 0 auto;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.success-icon {
+    /* Màu xanh ngọc chủ đạo */
+    color: var(--color-primary); 
+    margin-bottom: 20px;
+}
+
+.success-heading {
+    color: var(--color-primary); 
+    margin-bottom: 15px; 
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.success-text-note {
+    font-size: 16px; 
+    color: var(--color-text-light); 
+    margin-bottom: 20px;
+}
+
+.order-id-label {
+    font-weight: 500; 
+    margin-bottom: 10px;
+}
+.order-id-value {
+    color: #007bff; /* Màu xanh dương cho mã ID */
+    font-weight: 700;
+}
+
+.payment-status-label {
+    font-weight: 500; 
+    margin-bottom: 15px;
+}
+
+/* BADGE TRẠNG THÁI */
+.payment-status-badge {
+    display: inline-block; 
+    padding: 8px 15px; 
+    border-radius: 4px; 
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.status-paid {
+    background-color: var(--color-primary); /* Xanh ngọc */
+}
+.status-pending-payment {
+    background-color: var(--color-warning-icon); /* Vàng cam */
+}
+
+/* ACTIONS BUTTONS */
+.success-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 10px; 
+}
+/* Nút phụ (Xem chi tiết đơn hàng) */
+.btn-secondary {
+    background-color: var(--color-secondary, #6c757d); /* Sử dụng màu xám */
+    color: white; 
+    padding: 12px 25px; 
+    border-radius: 6px; 
+    text-decoration: none; 
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+.btn-continue-shopping {
+    /* Đã được định nghĩa ở .btn-primary (màu xanh ngọc) */
+    background-color: var(--color-primary); 
+    color: white; 
+}

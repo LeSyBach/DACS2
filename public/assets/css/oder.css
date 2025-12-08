@@ -1,0 +1,907 @@
+/* ======================================================== */
+/* CUSTOMER ORDERS & ORDER DETAIL CSS */
+/* File: assets/css/oder.css */
+/* ======================================================== */
+
+:root {
+    --customer-primary: #009688;
+    --customer-primary-light: #e0f2f1;
+    --customer-success: #28a745;
+    --customer-danger: #dc3545;
+    --customer-warning: #ffc107;
+    --customer-info: #17a2b8;
+    --customer-secondary: #6c757d;
+    --customer-bg-light: #f8f9fa;
+    --customer-border: #e0e0e0;
+}
+
+/* ======================================================== */
+/* 1. COMMON LAYOUT */
+/* ======================================================== */
+
+.profile-page-wrapper {
+    margin: 40px auto;
+}
+
+.orders-card,
+.customer-order-detail-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 30px;
+    margin: 20px 0;
+}
+
+/* ======================================================== */
+/* 2. HEADINGS */
+/* ======================================================== */
+
+.main-heading,
+.customer-order-heading {
+    color: #333;
+    font-size: 26px;
+    font-weight: 700;
+    border-bottom: 3px solid var(--customer-primary);
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.main-heading i,
+.customer-order-heading i {
+    color: var(--customer-primary);
+    font-size: 28px;
+}
+
+.customer-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--customer-primary);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--customer-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ======================================================== */
+/* 3. ALERTS */
+/* ======================================================== */
+
+.alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.alert i {
+    font-size: 18px;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* ======================================================== */
+/* 4. EMPTY STATE */
+/* ======================================================== */
+
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: var(--customer-bg-light);
+    border-radius: 12px;
+}
+
+.empty-icon {
+    font-size: 80px;
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.empty-state p {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 15px;
+}
+
+/* ======================================================== */
+/* 5. FILTER TABS */
+/* ======================================================== */
+
+.order-filter-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.filter-tab {
+    padding: 12px 20px;
+    border: 2px solid var(--customer-border);
+    background: #fff;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-tab i {
+    font-size: 16px;
+}
+
+.filter-tab:hover {
+    border-color: var(--customer-primary);
+    color: var(--customer-primary);
+}
+
+.filter-tab.active {
+    background: var(--customer-primary);
+    border-color: var(--customer-primary);
+    color: #fff;
+}
+
+/* ======================================================== */
+/* 6. ORDER LIST - SIMPLE CARDS */
+/* ======================================================== */
+
+.order-list-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.order-item-simple {
+    background: #fff;
+    border: 2px solid var(--customer-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.order-item-simple:hover {
+    border-color: var(--customer-primary);
+    box-shadow: 0 4px 16px rgba(0,150,136,0.15);
+}
+
+/* Header */
+.order-simple-header {
+    background: var(--customer-primary-light);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.order-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.order-id {
+    font-weight: 600;
+    color: var(--customer-primary);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.order-date-mobile {
+    display: none;
+    font-size: 14px;
+    color: #666;
+    align-items: center;
+    gap: 6px;
+}
+
+.order-header-right {
+    display: flex;
+    align-items: center;
+}
+
+/* Body */
+.order-simple-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Info Grid - Hàng 1: Thông tin giao hàng */
+.order-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--customer-border);
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.info-item i {
+    color: var(--customer-primary);
+    font-size: 14px;
+    width: 16px;
+    flex-shrink: 0;
+}
+
+.info-item .info-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.info-item .info-value {
+    color: #333;
+    font-weight: 400;
+}
+
+.info-item-full {
+    grid-column: 1 / -1;
+}
+
+/* Summary Row - Hàng 2: Tổng kết */
+.order-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.summary-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #666;
+}
+
+.summary-item i {
+    color: var(--customer-primary);
+    font-size: 14px;
+}
+
+.summary-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.order-total {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.total-label {
+    font-size: 13px;
+    color: #666;
+}
+
+.total-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--customer-danger);
+}
+
+.btn-view-detail {
+    padding: 10px 20px;
+    background: var(--customer-primary);
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.btn-view-detail:hover {
+    background: #00796b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,150,136,0.3);
+}
+
+/* ======================================================== */
+/* 7. BADGES */
+/* ======================================================== */
+
+.badge,
+.customer-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+/* Status badges */
+.status-pending, 
+.customer-status-pending,
+.payment-pending,
+.customer-payment-pending { 
+    background: rgba(255, 193, 7, 0.15);
+    color: var(--customer-warning);
+}
+
+.status-processing,
+.customer-status-processing {
+    background: rgba(108, 117, 125, 0.15);
+    color: var(--customer-secondary);
+}
+
+.status-shipped,
+.customer-status-shipped {
+    background: rgba(23, 162, 184, 0.15);
+    color: var(--customer-info);
+}
+
+.status-completed,
+.customer-status-completed,
+.payment-paid,
+.customer-payment-paid { 
+    background: rgba(40, 167, 69, 0.15);
+    color: var(--customer-success);
+}
+
+.status-cancelled,
+.customer-status-cancelled,
+.payment-unpaid,
+.customer-payment-unpaid,
+.payment-failed,
+.customer-payment-failed { 
+    background: rgba(220, 53, 69, 0.15);
+    color: var(--customer-danger);
+}
+
+/* ======================================================== */
+/* 8. BUTTONS */
+/* ======================================================== */
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background: var(--customer-primary);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #00796b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 150, 136, 0.3);
+}
+
+.btn-view-detail {
+    padding: 10px 20px;
+    background: var(--customer-primary);
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.btn-view-detail:hover {
+    background: #00796b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,150,136,0.3);
+}
+
+.customer-btn-back {
+    padding: 10px 20px;
+    background: var(--customer-secondary);
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.customer-btn-back:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+/* ======================================================== */
+/* 9. ORDER DETAIL - HEADER */
+/* ======================================================== */
+
+.customer-order-wrapper {
+    margin: 40px auto;
+}
+
+.customer-detail-header {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.customer-order-heading {
+    margin: 0;
+}
+
+/* ======================================================== */
+/* 10. ORDER TRACKING */
+/* ======================================================== */
+
+.customer-order-tracking {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 30px 0;
+    padding: 40px 20px;
+    background: var(--customer-bg-light);
+    border-radius: 12px;
+    position: relative;
+    z-index: 0;
+}
+
+.customer-order-tracking::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    right: 10%;
+    height: 3px;
+    background: #e0e0e0;
+    transform: translateY(-50%);
+    z-index: 0;
+}
+
+.customer-tracking-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+    flex: 1;
+}
+
+.customer-step-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #999;
+    transition: all 0.3s ease;
+}
+
+.customer-tracking-step.active .customer-step-icon {
+    background: var(--customer-primary);
+    border-color: var(--customer-primary);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0,150,136,0.3);
+}
+
+.customer-step-label {
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+    text-align: center;
+}
+
+.customer-tracking-step.active .customer-step-label {
+    color: var(--customer-primary);
+    font-weight: 600;
+}
+
+/* ======================================================== */
+/* 11. INFO BOXES */
+/* ======================================================== */
+
+.customer-detail-section {
+    margin-bottom: 30px;
+}
+
+.customer-info-box {
+    background: var(--customer-bg-light);
+    border-radius: 12px;
+    padding: 25px;
+    height: 100%;
+}
+
+.customer-info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.customer-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.customer-info-row label {
+    font-weight: 500;
+    color: #666;
+    font-size: 14px;
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.customer-info-row label i {
+    color: var(--customer-primary);
+    font-size: 14px;
+}
+
+.customer-info-row span {
+    text-align: right;
+    font-size: 14px;
+    color: #333;
+    flex: 1;
+}
+
+/* ======================================================== */
+/* 12. PRODUCTS LIST - LAYOUT 2 CỘT */
+/* ======================================================== */
+
+/* Container wrapper cho cả sản phẩm và summary */
+.customer-products-summary-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 450px;
+    gap: 30px;
+    align-items: start;
+}
+
+.customer-products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.customer-product-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: var(--customer-bg-light);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.customer-product-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.customer-product-image {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+}
+
+.customer-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--customer-border);
+}
+
+.customer-product-info {
+    flex: 1;
+}
+
+.customer-product-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.customer-product-meta {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.customer-product-price {
+    color: var(--customer-primary);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.customer-product-qty {
+    color: #666;
+    font-size: 14px;
+}
+
+.customer-product-total {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--customer-danger);
+}
+
+/* ======================================================== */
+/* 13. SUMMARY BOX - STICKY */
+/* ======================================================== */
+
+.customer-summary-box {
+    background: var(--customer-bg-light);
+    padding: 25px;
+    border-radius: 12px;
+    border: 2px solid var(--customer-border);
+    position: sticky;
+    top: 20px;
+}
+
+.customer-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    font-size: 15px;
+}
+
+.customer-summary-divider {
+    height: 2px;
+    background: var(--customer-border);
+    margin: 15px 0;
+}
+
+.customer-summary-row.customer-grand-total {
+    font-size: 18px;
+    font-weight: 700;
+    padding-top: 15px;
+}
+
+.customer-total-price {
+    color: var(--customer-danger);
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* ======================================================== */
+/* 14. PAGINATION */
+/* ======================================================== */
+
+.pagination-wrapper {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+/* ======================================================== */
+/* 15. RESPONSIVE */
+/* ======================================================== */
+
+@media (max-width: 1023px) {
+    .customer-products-summary-wrapper {
+        grid-template-columns: 1fr;
+    }
+    
+    .customer-summary-box {
+        position: static;
+    }
+}
+
+@media (max-width: 739px) {
+    .orders-card,
+    .customer-order-detail-card {
+        padding: 20px 15px;
+    }
+    
+    .main-heading,
+    .customer-order-heading {
+        font-size: 20px;
+    }
+    
+    .main-heading i,
+    .customer-order-heading i {
+        font-size: 22px;
+    }
+    
+    .customer-detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .customer-btn-back {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .order-filter-tabs {
+        gap: 8px;
+    }
+    
+    .filter-tab {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    .filter-tab span {
+        display: none;
+    }
+    
+    .order-date-mobile {
+        display: flex !important;
+    }
+    
+    .order-info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .order-summary-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .summary-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .summary-item:first-child {
+        display: none;
+    }
+    
+    .summary-right {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .order-total {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: var(--customer-bg-light);
+        border-radius: 8px;
+    }
+    
+    .btn-view-detail {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .customer-order-tracking {
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 30px 15px;
+    }
+    
+    .customer-order-tracking::before {
+        display: none;
+    }
+    
+    .customer-tracking-step {
+        flex: 0 0 calc(50% - 10px);
+    }
+    
+    .customer-step-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .customer-step-label {
+        font-size: 12px;
+    }
+    
+    .customer-products-summary-wrapper {
+        grid-template-columns: 1fr;
+    }
+    
+    .customer-product-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .customer-product-info {
+        text-align: center;
+    }
+    
+    .customer-product-meta {
+        justify-content: center;
+    }
+    
+    .customer-product-total {
+        font-size: 16px;
+    }
+    
+    .customer-summary-box {
+        max-width: 100%;
+        position: static;
+    }
+    
+    .customer-info-row {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .customer-info-row label {
+        min-width: auto;
+    }
+    
+    .customer-info-row span {
+        text-align: left;
+    }
+}

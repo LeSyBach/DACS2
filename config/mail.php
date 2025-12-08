@@ -2,6 +2,9 @@
 
 return [
 
+
+
+
     /*
     |--------------------------------------------------------------------------
     | Default Mailer
@@ -14,7 +17,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -114,5 +117,7 @@ return [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
+
+    'admin_email' => env('MAIL_ADMIN_EMAIL', 'bachfanscp10@gmail.com'),
 
 ];

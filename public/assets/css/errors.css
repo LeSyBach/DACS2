@@ -1,0 +1,79 @@
+.error-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh; /* Chiếm phần lớn chiều cao màn hình */
+    text-align: center;
+    padding: 40px 15px;
+    background-color: var(--color-background-light);
+}
+
+.error-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 60px 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+}
+
+.error-code {
+    font-size: 8rem; /* Kích thước lớn cho số 404 */
+    font-weight: 900;
+    color: var(--color-primary); /* Màu chủ đạo nổi bật */
+    display: block;
+    line-height: 0.9;
+    margin-bottom: 20px;
+}
+
+.error-heading {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.error-message {
+    font-size: 16px;
+    color: var(--color-text-light);
+    margin-bottom: 30px;
+}
+
+/* ACTIONS BUTTONS */
+.error-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn {
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn i {
+    margin-right: 8px;
+}
+
+.btn-home {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.btn-home:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.btn-search {
+    background-color: var(--color-secondary-btn);
+    color: white;
+}
+
+.btn-search:hover {
+    background-color: #5a6268;
+}

@@ -3,23 +3,57 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;  // 1. Gọi Model Sản phẩm
-use App\Models\Category; // 2. Gọi Model Danh mục
+use App\Models\Product;
+use App\Models\Category;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        // Lấy 8 sản phẩm nổi bật nhất (is_featured = 1)
-        // $featuredProducts = Product::featured()->paginate(8);
-        // $products = Product::allProducts()->paginate(12);
         $featuredProducts = Product::featured()->paginate(8, ['*'], 'featured_page');
         $products = Product::allProducts()->paginate(12, ['*'], 'all_page');
+        $categories = Category::withCount('products')->get();
 
-        // Lấy tất cả danh mục
-        $categories = Category::all();
+        return view('index', compact('featuredProducts', 'products', 'categories'));
+    }
 
-        // Gửi 2 biến này sang View 'home.index'
-        return view('index', compact('featuredProducts','products', 'categories'));
+    // Search cho trang chủ
+    public function search(Request $request)
+    {
+        $keyword = $request->input('keyword');
+        
+        if (empty($keyword)) {
+            // Kiểm tra referer để redirect đúng trang
+            $referer = $request->headers->get('referer');
+            if (str_contains($referer, '/products')) {
+                return redirect()->route('product');
+            }
+            return redirect()->route('index');
+        }
+
+        // SỬ DỤNG SMART SEARCH
+        $featuredProducts = Product::featured()
+            ->smartSearch($keyword)
+            ->paginate(8, ['*'], 'featured_page');
+
+        $products = Product::smartSearch($keyword)
+            ->paginate(12, ['*'], 'all_page');
+
+        $categories = Category::withCount('products')->get();
+
+        // XỬ LÝ AJAX REQUEST
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'featured' => view('home.featured-products', compact('featuredProducts'))->render(),
+                'all' => view('home.product-all', compact('products'))->render(),
+                'keyword' => $keyword
+            ]);
+        }
+
+        // NORMAL REQUEST - Tự động chọn view đúng
+        $referer = $request->headers->get('referer');
+        $view = (str_contains($referer, '/products')) ? 'product' : 'index';
+        
+        return view($view, compact('featuredProducts', 'products', 'categories', 'keyword'));
     }
 }

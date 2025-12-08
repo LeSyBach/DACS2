@@ -43,6 +43,7 @@ class AuthController extends Controller
         return redirect()->route('index')->with('success', 'Đăng ký thành công!');
     }
 
+
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -51,20 +52,21 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->has('remember'))) {
+
+            // Tạo session
             $request->session()->regenerate();
-            
-            if (Auth::user()->role === 'admin') {
-                return redirect()->intended('/admin/dashboard'); 
-            }
-            
+
+            // ⚠️ Không redirect admin nữa!
+            // Dù là admin hay user đều vào trang khách hàng
             return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
         }
 
-        // Nếu thất bại
+        // Nếu sai email / mật khẩu
         throw ValidationException::withMessages([
             'email' => 'Email hoặc mật khẩu không chính xác.',
         ]);
     }
+
     
     public function logout(Request $request)
     {

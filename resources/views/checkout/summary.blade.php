@@ -6,8 +6,7 @@
     <ul class="summary-product-list">
         @php
             $subtotal = 0;
-            $shippingFee = 30000; // Phí vận chuyển mặc định (ví dụ)
-            $taxRate = 0.10; // 10% VAT (ví dụ)
+            $shippingFee = 30000; 
         @endphp
 
         @foreach($cartItems as $item)
@@ -45,16 +44,12 @@
             <span class="summary-label">Phí vận chuyển:</span>
             <span class="summary-value">{{ number_format($shippingFee, 0, ',', '.') }}₫</span>
         </p>
+        
+        {{-- Bỏ qua VAT --}}
 
         @php
-            $vat = ($subtotal + $shippingFee) * $taxRate;
-            $grandTotal = $subtotal + $shippingFee + $vat;
+            $grandTotal = $subtotal + $shippingFee;
         @endphp
-        
-        <p class="summary-row">
-            <span class="summary-label">Thuế GTGT (10%):</span>
-            <span class="summary-value">{{ number_format($vat, 0, ',', '.') }}₫</span>
-        </p>
     </div>
 
     <hr class="summary-divider">

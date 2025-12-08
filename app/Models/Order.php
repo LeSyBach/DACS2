@@ -14,12 +14,13 @@ class Order extends Model
      */
     protected $fillable = [
         'user_id',
-        'receiver_name',
-        'receiver_phone',
+        'customer_name',    // <--- PHẢI CÓ
+        'customer_phone',   // <--- PHẢI CÓ
+        'customer_email',   // <--- PHẢI CÓ
         'shipping_address',
-        'total_amount',
-        'status', // Trạng thái đơn hàng (1: Pending, 4: Completed, ...)
-        'payment_method', // COD, ZaloPay, ...
+        'total_price',
+        'status',
+        'payment_method',
         'payment_status', // pending, paid, failed
     ];
 

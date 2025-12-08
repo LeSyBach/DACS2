@@ -204,4 +204,149 @@ function showToast(message, type = 'success') {
 
 
 
+// ============================================
+// HAMBURGER MENU - MOBILE NAVIGATION
+// Thêm vào cuối file main.js hoặc tạo file riêng
+// ============================================
+
+(function() {
+    'use strict';
+    
+    // Lấy các elements
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileOverlay = document.getElementById('mobile-overlay');
+    const mobileClose = document.getElementById('mobile-close');
+    const body = document.body;
+    
+    // Kiểm tra elements có tồn tại không
+    if (!hamburgerBtn || !mobileMenu || !mobileOverlay || !mobileClose) {
+        console.warn('Hamburger menu elements not found');
+        return;
+    }
+    
+    // ============================================
+    // HÀM MỞ MENU
+    // ============================================
+    function openMobileMenu() {
+        hamburgerBtn.classList.add('active');
+        mobileMenu.classList.add('active');
+        mobileOverlay.classList.add('active');
+        body.classList.add('menu-open');
+    }
+    
+    // ============================================
+    // HÀM ĐÓNG MENU
+    // ============================================
+    function closeMobileMenu() {
+        hamburgerBtn.classList.remove('active');
+        mobileMenu.classList.remove('active');
+        mobileOverlay.classList.remove('active');
+        body.classList.remove('menu-open');
+    }
+    
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    
+    // Click nút hamburger
+    hamburgerBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (mobileMenu.classList.contains('active')) {
+            closeMobileMenu();
+        } else {
+            openMobileMenu();
+        }
+    });
+    
+    // Click nút close (X)
+    mobileClose.addEventListener('click', function(e) {
+        e.stopPropagation();
+        closeMobileMenu();
+    });
+    
+    // Click overlay (nền tối)
+    mobileOverlay.addEventListener('click', function() {
+        closeMobileMenu();
+    });
+    
+    // Click vào menu item sẽ đóng menu (cho UX tốt hơn)
+    const mobileLinks = mobileMenu.querySelectorAll('.navbar__mobile-link');
+    mobileLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+            // Đóng menu sau khi click (với delay nhỏ để animation mượt)
+            setTimeout(closeMobileMenu, 150);
+        });
+    });
+    
+    // Đóng menu khi nhấn ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+    
+    // Đóng menu khi resize về desktop
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (window.innerWidth > 1023 && mobileMenu.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        }, 250);
+    });
+    
+    // ============================================
+    // XỬ LÝ NÚT ĐĂNG NHẬP/ĐĂNG KÝ TRONG MOBILE MENU
+    // ============================================
+    
+    // Lấy các nút đăng nhập/đăng ký trong mobile menu
+    const mobileLoginButtons = mobileMenu.querySelectorAll('.navbar__mobile-login-btn, .navbar__mobile-register-btn');
+    
+    mobileLoginButtons.forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            // Đóng mobile menu
+            closeMobileMenu();
+            
+            // Trigger click vào nút user desktop để mở modal auth
+            const desktopUserBtn = document.querySelector('.navbar__actions-item--user');
+            if (desktopUserBtn) {
+                setTimeout(function() {
+                    desktopUserBtn.click();
+                }, 300);
+            }
+        });
+    });
+    
+    // ============================================
+    // PREVENT SCROLL WHEN MENU OPEN
+    // ============================================
+    
+    // Lưu vị trí scroll khi mở menu
+    let scrollPosition = 0;
+    
+    const originalOpenMenu = openMobileMenu;
+    openMobileMenu = function() {
+        scrollPosition = window.pageYOffset;
+        body.style.position = 'fixed';
+        body.style.top = `-${scrollPosition}px`;
+        body.style.width = '100%';
+        originalOpenMenu();
+    };
+    
+    const originalCloseMenu = closeMobileMenu;
+    closeMobileMenu = function() {
+        body.style.position = '';
+        body.style.top = '';
+        body.style.width = '';
+        window.scrollTo(0, scrollPosition);
+        originalCloseMenu();
+    };
+    
+    console.log('✅ Hamburger menu initialized successfully');
+    
+})();
+
+
 

@@ -1,4 +1,4 @@
-<div class="category-section">
+{{-- <div class="category-section">
     <div class="grid wide">
         <h2 class="category-heading">Danh mục sản phẩm</h2>
         <p class="category-subtitle">
@@ -6,7 +6,7 @@
         </p>
 
         <div class="row">
-            <!-- 1 -->
+           
             <div class="col l-2 m-4 c-6">
                 <div class="category-card">
                     <div class="category-icon">
@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            <!-- 2 -->
+        
             <div class="col l-2 m-4 c-6">
                 <div class="category-card">
                     <div class="category-icon">
@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            <!-- 3 -->
+            
             <div class="col l-2 m-4 c-6">
                 <div class="category-card">
                     <div class="category-icon">
@@ -39,7 +39,7 @@
                 </div>
             </div>
 
-            <!-- 4 -->
+            
             <div class="col l-2 m-4 c-6">
                 <div class="category-card">
                     <div class="category-icon">
@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <!-- 5 -->
+           
             <div class="col l-2 m-4 c-6">
                 <div class="category-card">
                     <div class="category-icon">
@@ -61,7 +61,7 @@
                 </div>
             </div>
 
-            <!-- 6 -->
+           
             <div class="col l-2 m-4 c-6">
                 <div class="category-card">
                     <div class="category-icon">
@@ -71,6 +71,29 @@
                     <p>78 sản phẩm</p>
                 </div>
             </div>
+        </div>
+    </div>
+</div> --}}
+
+<div class="category-section">
+    <div class="grid wide">
+        <h2 class="category-heading">Danh mục sản phẩm</h2>
+        <p class="category-subtitle">
+            Khám phá các danh mục sản phẩm công nghệ đa dạng với chất lượng cao
+        </p>
+
+        <div class="row">
+            @foreach($categories as $category)
+            <div class="col l-2 m-4 c-6">
+                <a href="" class="category-card">
+                    <div class="category-icon">
+                        <i class="fas {{ $category->icon }}"></i>
+                    </div>
+                    <h3>{{ $category->name }}</h3>
+                    <p>{{ $category->products_count }} sản phẩm</p>
+                </a>
+            </div>
+            @endforeach
         </div>
     </div>
 </div>

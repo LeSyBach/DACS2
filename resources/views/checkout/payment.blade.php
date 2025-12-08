@@ -121,7 +121,7 @@
                     break;
                 case 'zalopay':
                     // Giả định bạn có file payment_zalopay.blade.php (có thể chứa logic QR)
-                    {{-- //content = `@include('checkout.payment_zalopay')`;  --}}
+                    content = `@include('checkout.payment_zalopay')`; 
                     break;
                 default:
                     content = `<p style="text-align: center; color: #999;">Vui lòng chọn phương thức thanh toán.</p>`;

@@ -69,6 +69,7 @@ class UserProfileController extends Controller
         return redirect()->route('profile.edit')->with('success', 'Mật khẩu đã được thay đổi thành công!');
     }
 
+
     public function showOrders()
     {
         /** @var \App\Models\User $user */
@@ -79,9 +80,17 @@ class UserProfileController extends Controller
 
     public function showOrderDetail($id)
     {
-        /** @var \App\Models\User $user */ // Khai báo biến $user là User Model
-        $user = Auth::user(); // Gán đối tượng User vào biến $user
-        $order = $user->orders()->findOrFail($id); 
+        /** @var \App\Models\User $user */ 
+        $user = Auth::user(); 
+        
+        // BỔ SUNG with('items') để tải chi tiết sản phẩm
+        $order = $user->orders()
+                    ->with('items') // Tải chi tiết các sản phẩm trong đơn hàng
+                    ->findOrFail($id); 
+        
         return view('profile.order_detail', compact('order'));
     }
+
+
+    
 }

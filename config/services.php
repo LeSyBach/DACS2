@@ -14,6 +14,16 @@ return [
     |
     */
 
+        // Trong config/services.php (Bổ sung khối này)
+    'zalopay' => [
+        'app_id' => env('ZALOPAY_APP_ID'),
+        'key1' => env('ZALOPAY_KEY1'),
+        'key2' => env('ZALOPAY_KEY2'),
+        'merchant_id' => env('ZALOPAY_MERCHANT_ID'),
+        'create_order_url' => env('ZALOPAY_CREATE_ORDER_URL'),
+        'callback_url' => env('ZALOPAY_CALLBACK_URL'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
