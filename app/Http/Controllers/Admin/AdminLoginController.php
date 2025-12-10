@@ -14,10 +14,12 @@ class AdminLoginController extends Controller
      */
     public function showLoginForm()
     {
-        // Kiểm tra nếu Admin đã đăng nhập, chuyển hướng thẳng đến Dashboard
-        if (Auth::check() && Auth::user()->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
+        // if (Auth::check() && Auth::user()->role === 'admin') {
+        //     return redirect()->route('admin.dashboard');
+        // }
+        if (Auth::guard('admin')->check()) {
+        return redirect()->route('admin.dashboard');
+    }
         
         // Trả về view login riêng của Admin
         return view('admin.login'); 
@@ -34,15 +36,18 @@ class AdminLoginController extends Controller
         ]);
 
         // 1. Cố gắng đăng nhập bằng GUARD 'web' mặc định
-        if (Auth::attempt($credentials, $request->has('remember'))) {
+        // if (Auth::attempt($credentials, $request->has('remember'))) {
             
-            $user = Auth::user(); 
+        //     $user = Auth::user(); 
+        if (Auth::guard('admin')->attempt($credentials, $request->has('remember'))) {
+        
+        $user = Auth::guard('admin')->user();
             
-            // 2. KIỂM TRA QUYỀN HẠN BẮT BUỘC (Kiểm tra cột role)
             if ($user->role !== 'admin') {
                 
                 // Nếu User có email/mật khẩu đúng nhưng KHÔNG phải admin
-                Auth::logout(); // Đăng xuất NGAY LẬP TỨC
+                // Auth::logout(); 
+                Auth::guard('admin')->logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
 
@@ -68,7 +73,8 @@ class AdminLoginController extends Controller
      */
     public function logout(Request $request)
     {
-        Auth::logout(); 
+        // Auth::logout(); 
+        Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

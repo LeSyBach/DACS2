@@ -16,6 +16,7 @@ class CartItem extends Model
     protected $fillable = [
         'user_id',
         'product_id',
+        'variant_id',
         'quantity',
     ];
 
@@ -38,5 +39,32 @@ class CartItem extends Model
     {
         // Liên kết với Model App\Models\Product
         return $this->belongsTo(Product::class);
+    }
+
+
+
+
+    // Quan hệ với variant
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class);
+    }
+
+    // Lấy giá (ưu tiên variant)
+    public function getPriceAttribute()
+    {
+        return $this->variant ? $this->variant->price : $this->product->price;
+    }
+
+    // Lấy tồn kho
+    public function getStockAttribute()
+    {
+        return $this->variant ? $this->variant->stock : $this->product->stock;
+    }
+
+    // Tổng tiền
+    public function getTotalAttribute()
+    {
+        return $this->price * $this->quantity;
     }
 }

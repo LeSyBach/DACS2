@@ -12,12 +12,22 @@ class OrderItem extends Model
     /**
      * Khai báo các cột có thể được gán giá trị hàng loạt (mass assignable)
      */
+    // protected $fillable = [
+    //     'order_id',
+    //     'product_id',
+    //     'product_name',
+    //     'quantity',
+    //     'price',
+    // ];
+
     protected $fillable = [
         'order_id',
         'product_id',
         'product_name',
+        'variant_id',
+        'variant_info',
         'quantity',
-        'price', // Giá tại thời điểm đặt hàng (Rất quan trọng)
+        'price'
     ];
 
     // --- CÁC MỐI QUAN HỆ (Relationships) ---
@@ -43,8 +53,23 @@ class OrderItem extends Model
     /**
      * 3. (Tùy chọn) Hàm tính tổng tiền cho từng dòng sản phẩm
      */
+    // public function getTotalAttribute()
+    // {
+    //     return $this->quantity * $this->price;
+    // }
+
+
+    // Quan hệ với variant
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class);
+    }
+
+    // Tổng tiền
     public function getTotalAttribute()
     {
-        return $this->quantity * $this->price;
+        return $this->price * $this->quantity;
     }
+
+
 }

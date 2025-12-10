@@ -19,7 +19,7 @@
                 </p>
 
                 <div class="hero__actions">
-                    <button class="hero__btn hero__btn--primary">Mua sắm ngay</button>3
+                    <button class="hero__btn hero__btn--primary">Mua sắm ngay</button>
                     <button class="hero__btn hero__btn--outline">Xem danh mục</button>
                 </div>
 

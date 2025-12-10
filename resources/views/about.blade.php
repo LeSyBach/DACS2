@@ -31,7 +31,7 @@
                             Câu Chuyện Của Chúng Tôi
                         </h2>
                         <p class="about-text">
-                            Được thành lập từ năm 2020, chúng tôi bắt đầu với niềm đam mê mang đến những sản phẩm chất lượng cao cho khách hàng Việt Nam. Từ một cửa hàng nhỏ, chúng tôi đã không ngừng phát triển và trở thành một trong những địa chỉ mua sắm tin cậy.
+                            Được thành lập từ năm 2025, chúng tôi bắt đầu với niềm đam mê mang đến những sản phẩm chất lượng cao cho khách hàng Việt Nam. Từ một cửa hàng nhỏ, chúng tôi đã không ngừng phát triển và trở thành một trong những địa chỉ mua sắm tin cậy.
                         </p>
                         <p class="about-text">
                             Với đội ngũ nhân viên nhiệt tình và giàu kinh nghiệm, chúng tôi cam kết mang đến trải nghiệm mua sắm tuyệt vời nhất. Sự hài lòng của bạn chính là động lực để chúng tôi không ngừng phát triển và hoàn thiện.
@@ -168,12 +168,12 @@
                 <div class="col l-4 m-6 c-12">
                     <div class="team-card">
                         <div class="team-card__image">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400" alt="CEO">
+                            <img src="" alt="CEO">
                         </div>
                         <div class="team-card__info">
-                            <h3 class="team-card__name">Nguyễn Văn A</h3>
+                            <h3 class="team-card__name">Lê Sỹ Bách</h3>
                             <p class="team-card__position">CEO & Co-Founder</p>
-                            <p class="team-card__desc">10 năm kinh nghiệm trong lĩnh vực thương mại điện tử và quản lý chuỗi cung ứng</p>
+                            <p class="team-card__desc">Chuyên gia trong lĩnh vực thương mại điện tử và quản lý chuỗi cung ứng</p>
                             <div class="team-card__social">
                                 <a href="#"><i class="fab fa-facebook-f"></i></a>
                                 <a href="#"><i class="fab fa-linkedin-in"></i></a>
@@ -186,12 +186,12 @@
                 <div class="col l-4 m-6 c-12">
                     <div class="team-card">
                         <div class="team-card__image">
-                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400" alt="COO">
+                            <img src="" alt="COO">
                         </div>
                         <div class="team-card__info">
-                            <h3 class="team-card__name">Trần Thị B</h3>
+                            <h3 class="team-card__name">Nguyễn Văn Thái Hào</h3>
                             <p class="team-card__position">COO & Co-Founder</p>
-                            <p class="team-card__desc">Chuyên gia vận hành với 8 năm kinh nghiệm trong ngành bán lẻ và dịch vụ khách hàng</p>
+                            <p class="team-card__desc">Chuyên gia vận hành trong ngành bán lẻ và dịch vụ khách hàng</p>
                             <div class="team-card__social">
                                 <a href="#"><i class="fab fa-facebook-f"></i></a>
                                 <a href="#"><i class="fab fa-linkedin-in"></i></a>

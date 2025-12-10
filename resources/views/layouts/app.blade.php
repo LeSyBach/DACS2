@@ -232,8 +232,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
 
-// ...existing code...
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -276,7 +274,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 let resultsHTML = '';
                 products.forEach((product, index) => {
                     if (index < 5) {
-                        const link = product.querySelector('a')?.href || '#';
+                        // ✅ FIX: Kiểm tra nếu product chính là thẻ <a>
+                        let linkElement;
+                        
+                        if (product.tagName === 'A') {
+                            linkElement = product; // product chính là thẻ <a>
+                        } else {
+                            linkElement = product.querySelector('a'); // tìm thẻ <a> bên trong
+                        }
+                        
+                        const link = linkElement ? linkElement.getAttribute('href') : '#';
                         const img = product.querySelector('.product-item__img')?.src || '';
                         const name = product.querySelector('.product-item__name')?.textContent || '';
                         const price = product.querySelector('.product-item__price-current')?.textContent || '';

@@ -91,6 +91,17 @@
                                         </span>
                                     </td>
                                     <td data-label="Hành động">
+
+                                        {{-- NÚT BIẾN THỂ (THÊM MỚI) --}}
+                                        <a href="{{ route('admin.products.variants.index', $product) }}" 
+                                        class="btn btn-sm btn-info" 
+                                        title="Quản lý biến thể">
+                                            <i class="fas fa-palette"></i> 
+                                            @if($product->hasVariants())
+                                                ({{ $product->variants->count() }})
+                                            @endif
+                                        </a>
+
                                         <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-sm btn-info">
                                             <i class="fas fa-edit"></i> Sửa
                                         </a>

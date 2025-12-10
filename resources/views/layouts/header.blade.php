@@ -239,7 +239,6 @@
 <script>
 // ============================================
 // XỬ LÝ CLICK ICON SEARCH CHỈ TRÊN MOBILE
-// Thêm vào file JS hoặc trong <script> tag
 // ============================================
 
 document.addEventListener('DOMContentLoaded', function() {

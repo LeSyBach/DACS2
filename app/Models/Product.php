@@ -68,5 +68,77 @@ class Product extends Model
               });
         });
     }
+
+    // Quan hệ với variants
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    // Lấy biến thể mặc định
+    public function defaultVariant()
+    {
+        return $this->hasOne(ProductVariant::class)->where('is_default', true);
+    }
+
+    // Kiểm tra có variants không
+    public function hasVariants()
+    {
+        return $this->variants()->exists();
+    }
+
+    // Lấy giá hiển thị
+    public function getDisplayPriceAttribute()
+    {
+        if ($this->hasVariants()) {
+            $default = $this->defaultVariant;
+            return $default ? $default->price : $this->variants()->min('price');
+        }
+        return $this->price;
+    }
+
+    // Lấy giá thấp nhất
+    public function getMinPriceAttribute()
+    {
+        if ($this->hasVariants()) {
+            return $this->variants()->min('price');
+        }
+        return $this->price;
+    }
+
+    // Lấy giá cao nhất
+    public function getMaxPriceAttribute()
+    {
+        if ($this->hasVariants()) {
+            return $this->variants()->max('price');
+        }
+        return $this->price;
+    }
+
+    // Lấy tồn kho tổng
+    public function getTotalStockAttribute()
+    {
+        if ($this->hasVariants()) {
+            return $this->variants()->sum('stock');
+        }
+        return $this->stock;
+    }
+
+    // Hiển thị giá dạng range
+    public function getPriceRangeAttribute()
+    {
+        if (!$this->hasVariants()) {
+            return number_format($this->price, 0, ',', '.') . '₫';
+        }
+
+        $min = $this->min_price;
+        $max = $this->max_price;
+
+        if ($min == $max) {
+            return number_format($min, 0, ',', '.') . '₫';
+        }
+
+        return number_format($min, 0, ',', '.') . '₫ - ' . number_format($max, 0, ',', '.') . '₫';
+    }
     
 }

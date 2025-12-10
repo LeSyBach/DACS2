@@ -29,6 +29,22 @@ document.body.addEventListener("click", function (e) {
     closeModal();
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // auth
 // Lấy phần tử chính
 document.addEventListener("DOMContentLoaded", function() {
@@ -59,6 +75,18 @@ document.addEventListener("DOMContentLoaded", function() {
     const formSendOtp = forgotForm ? forgotForm.querySelector('form') : null;
     const formResetPass = otpNewPassForm ? otpNewPassForm.querySelector('form.form-reset-password') : null;
 
+
+    // === TỰ ĐỘNG HIỆN MODAL KHI CÓ SESSION show_login_modal ===
+    if (modalAuth && modalAuth.dataset.hasError === 'true') {
+        // Modal đã được mở sẵn từ server (không có class hidden)
+        // Kiểm tra xem có phải là trường hợp show_login_modal không
+        if (!loginForm.classList.contains('hidden') && 
+            registerForm.classList.contains('hidden') && 
+            forgotForm.classList.contains('hidden')) {
+            // Đây là trường hợp show_login_modal
+            // Modal và form login đã được hiện sẵn, không cần làm gì thêm
+        }
+    }
 
     // === 2. HÀM CHUYỂN ĐỔI FORM (View Logic) ===
 

@@ -13,7 +13,7 @@
                     
                     <h1 class="main-heading">
                         <i class="fa-solid fa-box"></i>
-                        <span>ĐỚN HÀNG CỦA TÔI</span>
+                        <span>ĐƠN HÀNG CỦA TÔI</span>
                     </h1>
                     
                     {{-- Thông báo --}}

@@ -127,8 +127,8 @@
                             </div>
                             <div class="info-item__content">
                                 <h4>Điện thoại</h4>
-                                <p>+84 901 234 567</p>
-                                <p>+84 901 234 568</p>
+                                <p>+84 123456789</p>
+                                <p>+84 987654321</p>
                             </div>
                         </div>
 
@@ -149,8 +149,8 @@
                             </div>
                             <div class="info-item__content">
                                 <h4>Địa chỉ</h4>
-                                <p>123 Đường Nguyễn Huệ</p>
-                                <p>Quận 1, TP. Hồ Chí Minh</p>
+                                <p>470 Trần Đại Nghĩa</p>
+                                <p>TP.Đà Nẵng</p>
                             </div>
                         </div>
 

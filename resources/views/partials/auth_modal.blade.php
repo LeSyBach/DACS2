@@ -1,11 +1,10 @@
 {{-- FILE: resources/views/partials/auth_modal.blade.php --}}
 {{-- Đã sửa logic kiểm tra lỗi để tránh xung đột hiển thị --}}
 <div class="modal auth-modal 
-    @if(!$errors->any() && !session('show_forgot') && !session('show_otp_page')) 
+    @if(!$errors->any() && !session('show_forgot') && !session('show_otp_page') && !session('show_login_modal')) 
         hidden 
     @endif"
-    data-has-error="@if($errors->any() || session('show_forgot') || session('show_otp_page')) true @else false @endif"
->
+    data-has-error="@if($errors->any() || session('show_forgot') || session('show_otp_page') || session('show_login_modal')) true @else false @endif">
     <div class="modal__overlay"></div>
 
     <div class="modal__body">

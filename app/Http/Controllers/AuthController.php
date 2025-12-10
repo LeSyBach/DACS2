@@ -55,10 +55,8 @@ class AuthController extends Controller
 
             // Tạo session
             $request->session()->regenerate();
-
-            // ⚠️ Không redirect admin nữa!
-            // Dù là admin hay user đều vào trang khách hàng
-            return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
+            return redirect()->intended(route('index'))
+            ->with('success', 'Đăng nhập thành công!');
         }
 
         // Nếu sai email / mật khẩu
@@ -68,13 +66,21 @@ class AuthController extends Controller
     }
 
     
+   
     public function logout(Request $request)
     {
+        // Lưu URL hiện tại trước khi logout
+        $previousUrl = url()->previous();
+        
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('index')->with('success', 'Đã đăng xuất thành công!');
+        // Flash session để hiện modal
+        session()->flash('show_login_modal', true);
+        
+        // Redirect về trang trước đó (hoặc trang chủ nếu không có)
+        return redirect($previousUrl)->with('success', 'Đã đăng xuất thành công!');
     }
 
     // --- PHẦN 2: QUÊN MẬT KHẨU (FORGOT PASSWORD LOGIC) ---
