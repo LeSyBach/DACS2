@@ -23,7 +23,10 @@
                     <div class="col l-5 m-6 c-12">
                         <div class="gallery">
                             <div class="gallery__main">
-                                <img src="{{ $product->image }}" alt="{{ $product->name }}" class="gallery__img" id="main-img">
+                                @php
+                                    $displayImage = ($defaultVariant && $defaultVariant->image) ? $defaultVariant->image_url : $product->image_url;
+                                @endphp
+                                <img src="{{ $displayImage }}" alt="{{ $product->name }}" class="gallery__img" id="main-img">
                                 
                                 <div class="gallery__badges">
                                     {{-- Logic: Nếu sản phẩm mới tạo trong 30 ngày --}}
@@ -38,19 +41,6 @@
                                         @endphp
                                         <span class="badge badge--sale">-{{ $percent }}%</span>
                                     @endif
-                                </div>
-                            </div>
-                            
-                            {{-- (Tạm thời ảnh nhỏ dùng lại ảnh chính vì chưa có bảng ProductImage) --}}
-                            <div class="gallery__thumbs">
-                                <div class="gallery__thumb gallery__thumb--active">
-                                    <img src="{{ $product->image }}" alt="">
-                                </div>
-                                <div class="gallery__thumb">
-                                    <img src="{{ $product->image }}" alt="">
-                                </div>
-                                <div class="gallery__thumb">
-                                    <img src="{{ $product->image }}" alt="">
                                 </div>
                             </div>
                         </div>
@@ -77,25 +67,41 @@
                                 </div>
                                 <span class="meta-divider">|</span>
                                 <span class="status">
-                                    {{ $product->quantity > 0 ? 'Còn hàng' : 'Hết hàng' }}
+                                    @php
+                                        $stock = $defaultVariant ? $defaultVariant->stock : $product->quantity;
+                                    @endphp
+                                    {{ $stock > 0 ? 'Còn hàng' : 'Hết hàng' }}
                                 </span>
                             </div>
 
                             <div class="price-box">
                                 <div class="price-box__main">
                                     <span class="current-price">
-                                        {{ number_format($product->price, 0, ',', '.') }} ₫
+                                        @if($defaultVariant)
+                                            {{ number_format($defaultVariant->price, 0, ',', '.') }} ₫
+                                        @else
+                                            {{ number_format($product->price, 0, ',', '.') }} ₫
+                                        @endif
                                     </span>
-                                    @if($product->old_price)
+                                    @if($defaultVariant && $defaultVariant->old_price)
+                                        <span class="old-price">
+                                            {{ number_format($defaultVariant->old_price, 0, ',', '.') }} ₫
+                                        </span>
+                                    @elseif($product->old_price)
                                         <span class="old-price">
                                             {{ number_format($product->old_price, 0, ',', '.') }} ₫
                                         </span>
                                     @endif
                                 </div>
                                 
-                                @if($product->old_price)
+                                @php
+                                    $oldPrice = $defaultVariant ? $defaultVariant->old_price : $product->old_price;
+                                    $currentPrice = $defaultVariant ? $defaultVariant->price : $product->price;
+                                @endphp
+                                
+                                @if($oldPrice && $oldPrice > $currentPrice)
                                     <div class="price-box__save">
-                                        Tiết kiệm: {{ number_format($product->old_price - $product->price, 0, ',', '.') }} ₫
+                                        Tiết kiệm: {{ number_format($oldPrice - $currentPrice, 0, ',', '.') }} ₫
                                     </div>
                                 @endif
                             </div>
@@ -104,10 +110,72 @@
                                 {{ $product->description }}
                             </p>
 
+                            @if($product->variants->count() > 0)
+                                {{-- CHỌN BIẾN THỂ --}}
+                                <div class="variants-selection">
+                                    {{-- Chọn màu sắc --}}
+                                    @php
+                                        $colors = $product->variants->pluck('color')->unique()->filter();
+                                    @endphp
+                                    
+                                    @if($colors->count() > 0)
+                                        <div class="variant-group">
+                                            <label class="variant-label">
+                                                <i class="fa-solid fa-palette"></i> Màu sắc:
+                                                <span class="selected-value" id="selected-color">
+                                                    {{ $defaultVariant->color ?? $colors->first() }}
+                                                </span>
+                                            </label>
+                                            <div class="variant-options" id="color-options">
+                                                @foreach($colors as $color)
+                                                    <button 
+                                                        type="button" 
+                                                        class="variant-option {{ ($defaultVariant && $defaultVariant->color == $color) || (!$defaultVariant && $loop->first) ? 'active' : '' }}"
+                                                        data-type="color"
+                                                        data-value="{{ $color }}">
+                                                        {{ $color }}
+                                                    </button>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    {{-- Chọn dung lượng --}}
+                                    @php
+                                        $storages = $product->variants->pluck('storage')->unique()->filter();
+                                    @endphp
+                                    
+                                    @if($storages->count() > 0)
+                                        <div class="variant-group">
+                                            <label class="variant-label">
+                                                <i class="fa-solid fa-microchip"></i> Dung lượng:
+                                                <span class="selected-value" id="selected-storage">
+                                                    {{ $defaultVariant->storage ?? $storages->first() }}
+                                                </span>
+                                            </label>
+                                            <div class="variant-options" id="storage-options">
+                                                @foreach($storages as $storage)
+                                                    <button 
+                                                        type="button" 
+                                                        class="variant-option {{ ($defaultVariant && $defaultVariant->storage == $storage) || (!$defaultVariant && $loop->first) ? 'active' : '' }}"
+                                                        data-type="storage"
+                                                        data-value="{{ $storage }}">
+                                                        {{ $storage }}
+                                                    </button>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+
                             {{-- FORM MUA HÀNG (Chuẩn bị cho tính năng Add to Cart) --}}
                             {{-- FORM THÊM VÀO GIỎ --}}
                             <form id="add-to-cart-form" action="{{ route('cart.add', ['id' => $product->id]) }}" method="POST" class="actions">
                                 @csrf
+                                
+                                {{-- Hidden input để lưu variant_id được chọn --}}
+                                <input type="hidden" name="variant_id" id="selected-variant-id" value="{{ $defaultVariant->id ?? '' }}">
                                 
                                 <div class="quantity">
                                     {{-- Nút giảm --}}
@@ -116,7 +184,7 @@
                                     </button>
                                     
                                     {{-- Ô nhập số lượng --}}
-                                    <input type="number" name="quantity" value="1" class="qty-input" min="1">
+                                    <input type="number" name="quantity" value="1" class="qty-input" min="1" max="{{ $defaultVariant->stock ?? $product->quantity }}">
                                     
                                     {{-- Nút tăng --}}
                                     <button type="button" class="qty-btn plus">
@@ -173,5 +241,36 @@
 @endpush
 
 @push('scripts')
+    {{-- Truyền dữ liệu variants sang JavaScript với image_url --}}
+    <script>
+        const productVariants = <?php echo json_encode($product->variants->map(function($v) {
+            return [
+                'id' => $v->id,
+                'product_id' => $v->product_id,
+                'color' => $v->color,
+                'storage' => $v->storage,
+                'price' => $v->price,
+                'old_price' => $v->old_price,
+                'stock' => $v->stock,
+                'sku' => $v->sku,
+                'image' => $v->image,
+                'image_url' => $v->image_url,
+                'is_default' => $v->is_default
+            ];
+        })); ?>;
+        const defaultVariant = <?php echo json_encode($defaultVariant ? [
+            'id' => $defaultVariant->id,
+            'product_id' => $defaultVariant->product_id,
+            'color' => $defaultVariant->color,
+            'storage' => $defaultVariant->storage,
+            'price' => $defaultVariant->price,
+            'old_price' => $defaultVariant->old_price,
+            'stock' => $defaultVariant->stock,
+            'sku' => $defaultVariant->sku,
+            'image' => $defaultVariant->image,
+            'image_url' => $defaultVariant->image_url,
+            'is_default' => $defaultVariant->is_default
+        ] : null); ?>;
+    </script>
     <script src="{{ asset('assets/js/product-detail.js') }}"></script>
 @endpush

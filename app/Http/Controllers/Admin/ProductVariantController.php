@@ -181,6 +181,16 @@ class ProductVariantController extends Controller
         $colorCode = $variant->color ? strtoupper(substr($variant->color, 0, 3)) : 'DEF';
         $storageCode = $variant->storage ? str_replace(['GB', 'TB', ' '], '', strtoupper($variant->storage)) : '';
         
-        return $productCode . '-' . $colorCode . ($storageCode ? '-' . $storageCode : '');
+        $baseSku = $productCode . '-' . $colorCode . ($storageCode ? '-' . $storageCode : '');
+        
+        // Kiểm tra xem SKU đã tồn tại chưa, nếu có thì thêm số vào cuối
+        $sku = $baseSku;
+        $counter = 1;
+        while (ProductVariant::where('sku', $sku)->where('id', '!=', $variant->id ?? 0)->exists()) {
+            $sku = $baseSku . '-' . $counter;
+            $counter++;
+        }
+        
+        return $sku;
     }
 }

@@ -148,8 +148,8 @@
             @foreach($order->items as $item)
                 <div class="customer-product-item">
                     <div class="customer-product-image">
-                        <img src="{{ $item->product->image ?? asset('images/placeholder.png') }}" 
-                             alt="{{ $item->product_name }}"
+                        <img src="{{ $item->product->image_url }}" 
+                             alt="{{ $item->product->name }}" 
                              onerror="this.src='{{ asset('images/placeholder.png') }}'">
                     </div>
                     <div class="customer-product-info">

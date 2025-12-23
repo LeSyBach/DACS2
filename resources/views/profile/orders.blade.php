@@ -165,10 +165,18 @@
                                                     <span class="total-label">Tổng tiền:</span>
                                                     <span class="total-price">{{ number_format($order->total_price, 0, ',', '.') }}₫</span>
                                                 </div>
-                                                <a href="{{ route('order.detail', $order->id) }}" class="btn-view-detail">
-                                                    <i class="fas fa-eye"></i>
-                                                    <span>Xem chi tiết</span>
-                                                </a>
+                                                <div class="order-actions">
+                                                    <a href="{{ route('order.detail', $order->id) }}" class="btn-view-detail">
+                                                        <i class="fas fa-eye"></i>
+                                                        <span>Xem chi tiết</span>
+                                                    </a>
+                                                    @if($order->status === 'pending')
+                                                        <button type="button" class="btn-cancel-order" data-order-id="{{ $order->id }}">
+                                                            <i class="fas fa-times-circle"></i>
+                                                            <span>Hủy đơn</span>
+                                                        </button>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -189,9 +197,36 @@
         </div>
     </div>
 
-    {{-- JavaScript Filter --}}
+    {{-- Modal xác nhận hủy đơn --}}
+    <div id="cancelOrderModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Xác nhận hủy đơn hàng</h3>
+                <button class="modal-close" onclick="closeCancelModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn hủy đơn hàng <strong>#<span id="cancelOrderId"></span></strong>?</p>
+                <p class="text-warning">Lưu ý: Hành động này không thể hoàn tác!</p>
+                <div class="cancel-reason">
+                    <label for="cancelReason">Lý do hủy đơn:</label>
+                    <textarea id="cancelReason" rows="3" placeholder="Vui lòng cho chúng tôi biết lý do bạn muốn hủy đơn hàng..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeCancelModal()">Đóng</button>
+                <button class="btn btn-danger" onclick="confirmCancelOrder()">Xác nhận hủy</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- JavaScript Filter & Cancel Order --}}
     <script>
+        let orderIdToCancel = null;
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Filter tabs
             const filterTabs = document.querySelectorAll('.filter-tab');
             const orderItems = document.querySelectorAll('.order-item-simple');
             
@@ -211,7 +246,78 @@
                     });
                 });
             });
+
+            // Cancel order buttons
+            const cancelButtons = document.querySelectorAll('.btn-cancel-order');
+            cancelButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    orderIdToCancel = this.getAttribute('data-order-id');
+                    document.getElementById('cancelOrderId').textContent = orderIdToCancel;
+                    document.getElementById('cancelOrderModal').style.display = 'flex';
+                });
+            });
         });
+
+        function closeCancelModal() {
+            document.getElementById('cancelOrderModal').style.display = 'none';
+            document.getElementById('cancelReason').value = '';
+            orderIdToCancel = null;
+        }
+
+        function confirmCancelOrder() {
+            if (!orderIdToCancel) {
+                console.error('No order ID to cancel');
+                return;
+            }
+
+            const reason = document.getElementById('cancelReason').value;
+            const url = `{{ url('/order') }}/${orderIdToCancel}/cancel`;
+            console.log('Cancelling order:', orderIdToCancel, 'URL:', url, 'Reason:', reason);
+
+            // Gửi AJAX request
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ reason: reason })
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    if (typeof showToast === 'function') {
+                        showToast(data.message || 'Đã hủy đơn hàng thành công!', 'success');
+                    } else {
+                        alert(data.message || 'Đã hủy đơn hàng thành công!');
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    if (typeof showToast === 'function') {
+                        showToast(data.message || 'Có lỗi xảy ra!', 'error');
+                    } else {
+                        alert(data.message || 'Có lỗi xảy ra!');
+                    }
+                }
+                closeCancelModal();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (typeof showToast === 'function') {
+                    showToast('Có lỗi xảy ra khi hủy đơn hàng!', 'error');
+                } else {
+                    alert('Có lỗi xảy ra khi hủy đơn hàng!');
+                }
+                closeCancelModal();
+            });
+        }
     </script>
 @endsection
 

@@ -41,7 +41,16 @@ class ProductController extends Controller
     // Hàm hiển thị trang chi tiết
     public function detail($id)
     {
-        $product = Product::findOrFail($id);
-        return view('product.product-detail', compact('product'));
+        $product = Product::with(['variants' => function($query) {
+            $query->orderBy('is_default', 'desc')
+                  ->orderBy('color')
+                  ->orderBy('storage');
+        }])->findOrFail($id);
+        
+        // Lấy variant mặc định hoặc variant đầu tiên
+        $defaultVariant = $product->variants->where('is_default', true)->first() 
+                       ?? $product->variants->first();
+        
+        return view('product.product-detail', compact('product', 'defaultVariant'));
     }
 }

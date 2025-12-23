@@ -83,4 +83,33 @@ class ProductVariant extends Model
         }
         return round((($this->old_price - $this->price) / $this->old_price) * 100);
     }
+
+    /**
+     * Accessor để tự động tạo URL ảnh đúng cho variant
+     */
+    public function getImageUrlAttribute()
+    {
+        if (empty($this->image)) {
+            // Fallback về ảnh sản phẩm chính nếu variant không có ảnh
+            return $this->product ? $this->product->image_url : asset('images/placeholder.png');
+        }
+        
+        // Nếu là URL đầy đủ (http/https) thì return luôn
+        if (str_starts_with($this->image, 'http')) {
+            return $this->image;
+        }
+        
+        // Nếu bắt đầu bằng /storage thì dùng asset
+        if (str_starts_with($this->image, '/storage')) {
+            return asset($this->image);
+        }
+        
+        // Nếu bắt đầu bằng assets/ (lưu trong public/assets)
+        if (str_starts_with($this->image, 'assets/')) {
+            return asset($this->image);
+        }
+        
+        // Còn lại là đường dẫn relative trong storage (products/variants/abc.jpg)
+        return asset('storage/' . $this->image);
+    }
 }

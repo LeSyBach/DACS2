@@ -8,6 +8,8 @@ use App\Models\CartItem; // Cần thiết
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth; 
 use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\Log;
+
 use Illuminate\Support\Facades\View; // Cần thiết để kiểm tra View có dữ liệu
 
 class CartController extends Controller
@@ -17,6 +19,21 @@ class CartController extends Controller
     {
         $product = Product::findOrFail($id);
         $quantity = $request->input('quantity', 1);
+        $variantId = $request->input('variant_id', null);
+        
+        // Xử lý trường hợp variant_id là chuỗi rỗng
+        if (empty($variantId)) {
+            $variantId = null;
+        }
+        
+        // Debug: Log variant_id
+        Log::info('Adding to cart', [
+            'product_id' => $id,
+            'variant_id' => $variantId,
+            'variant_id_type' => gettype($variantId),
+            'quantity' => $quantity,
+            'user_id' => Auth::id()
+        ]);
 
         // --- HÀM CHO USER ĐÃ ĐĂNG NHẬP (Lưu vào DB) ---
         if (Auth::check()) {
@@ -28,15 +45,44 @@ class CartController extends Controller
             }
             
             // B. Thêm/Cập nhật mục hiện tại vào DB
-            CartItem::updateOrCreate(
-                ['user_id' => $user->id, 'product_id' => $id],
-                ['quantity' => DB::raw('quantity + ' . $quantity)] 
-            );
+            // Tìm cart item với product_id và variant_id (nếu có)
+            $query = CartItem::where('user_id', $user->id)
+                             ->where('product_id', $id);
+            
+            if ($variantId) {
+                $query->where('variant_id', $variantId);
+            } else {
+                $query->whereNull('variant_id');
+            }
+            
+            $cartItem = $query->first();
+            
+            Log::info('Cart item search result', [
+                'found' => $cartItem ? 'yes' : 'no',
+                'cart_item_id' => $cartItem ? $cartItem->id : null,
+                'existing_quantity' => $cartItem ? $cartItem->quantity : 0
+            ]);
+            
+            if ($cartItem) {
+                // Nếu đã có, tăng số lượng
+                $cartItem->quantity += $quantity;
+                $cartItem->save();
+                Log::info('Updated existing cart item', ['new_quantity' => $cartItem->quantity]);
+            } else {
+                // Nếu chưa có, tạo mới
+                $newItem = CartItem::create([
+                    'user_id' => $user->id,
+                    'product_id' => $id,
+                    'variant_id' => $variantId,
+                    'quantity' => $quantity
+                ]);
+                Log::info('Created new cart item', ['cart_item_id' => $newItem->id]);
+            }
             
             // C. LẤY DỮ LIỆU GIỎ HÀNG DB MỚI NHẤT
             // Phải dùng with('product') để lấy thông tin sản phẩm
             $cartItemsDb = CartItem::where('user_id', $user->id)
-                                    ->with('product') 
+                                    ->with(['product', 'variant']) 
                                     ->get();
 
             $countUnique = $cartItemsDb->count();
@@ -55,16 +101,28 @@ class CartController extends Controller
         // --- HÀM CHO KHÁCH VÃNG LAI (Lưu vào Session) ---
         else {
             $cart = session()->get('cart', []);
-            if (isset($cart[$id])) {
-                $cart[$id]['quantity'] += $quantity;
+            
+            // Tạo key duy nhất cho product + variant
+            $cartKey = $variantId ? $id . '_' . $variantId : $id;
+            
+            if (isset($cart[$cartKey])) {
+                $cart[$cartKey]['quantity'] += $quantity;
             } else {
+                // Lấy thông tin variant nếu có
+                $variant = null;
+                if ($variantId) {
+                    $variant = $product->variants()->find($variantId);
+                }
+                
                 // Giữ lại thông tin cần thiết cho Session
-                $cart[$id] = [
+                $cart[$cartKey] = [
                     "name" => $product->name,
                     "quantity" => $quantity,
-                    "price" => $product->price,
-                    "image" => $product->image,
-                    "product_id" => $id, 
+                    "price" => $variant ? $variant->price : $product->price,
+                    "image" => ($variant && $variant->image) ? $variant->image : $product->image,
+                    "product_id" => $id,
+                    "variant_id" => $variantId,
+                    "variant_name" => $variant ? $variant->display_name : null,
                 ];
             }
 
@@ -88,12 +146,34 @@ class CartController extends Controller
     protected function migrateSessionCartToDb($user) 
     {
         $sessionCart = session()->get('cart', []);
-        foreach ($sessionCart as $productId => $item) {
+        foreach ($sessionCart as $cartKey => $item) {
+            $productId = $item['product_id'];
+            $variantId = $item['variant_id'] ?? null;
             $quantity = $item['quantity'];
-            CartItem::updateOrCreate(
-                ['user_id' => $user->id, 'product_id' => $productId],
-                ['quantity' => DB::raw('quantity + ' . $quantity)] 
-            );
+            
+            // Tìm cart item với product_id và variant_id
+            $query = CartItem::where('user_id', $user->id)
+                             ->where('product_id', $productId);
+            
+            if ($variantId) {
+                $query->where('variant_id', $variantId);
+            } else {
+                $query->whereNull('variant_id');
+            }
+            
+            $cartItem = $query->first();
+            
+            if ($cartItem) {
+                $cartItem->quantity += $quantity;
+                $cartItem->save();
+            } else {
+                CartItem::create([
+                    'user_id' => $user->id,
+                    'product_id' => $productId,
+                    'variant_id' => $variantId,
+                    'quantity' => $quantity
+                ]);
+            }
         }
         session()->forget('cart');
     }

@@ -18,6 +18,62 @@ use App\Http\Controllers\ContactController;
 // Trang chủ
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
+// Route tạo symlink cho hosting không có CLI
+// Truy cập: http://yoursite.com/setup-storage
+Route::get('/setup-storage', function () {
+    $target = storage_path('app/public');
+    $link = public_path('storage');
+    
+    if (file_exists($link) && is_link($link)) {
+        return 'Symlink đã tồn tại!';
+    }
+    
+    try {
+        // Thử tạo symlink trước
+        if (!file_exists($link)) {
+            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                $command = 'mklink /J "' . $link . '" "' . $target . '"';
+                exec($command, $output, $return);
+                if ($return === 0) {
+                    return 'Symlink đã được tạo thành công!';
+                }
+            } else {
+                if (@symlink($target, $link)) {
+                    return 'Symlink đã được tạo thành công!';
+                }
+            }
+        }
+        
+        // Nếu không tạo được symlink, copy file
+        if (!file_exists($link)) {
+            mkdir($link, 0755, true);
+        }
+        
+        // Copy tất cả file từ storage/app/public sang public/storage
+        $files = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($target, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+        
+        $count = 0;
+        foreach ($files as $file) {
+            $targetPath = $link . '/' . substr($file->getPathname(), strlen($target) + 1);
+            if ($file->isDir()) {
+                if (!file_exists($targetPath)) {
+                    mkdir($targetPath, 0755, true);
+                }
+            } else {
+                copy($file->getPathname(), $targetPath);
+                $count++;
+            }
+        }
+        
+        return "Không thể tạo symlink, đã copy {$count} files. LƯU Ý: Mỗi khi upload ảnh mới phải chạy lại route này!";
+    } catch (\Exception $e) {
+        return 'Lỗi: ' . $e->getMessage();
+    }
+});
+
 // Sản phẩm
 Route::get('/products', [ProductController::class, 'index'])->name('product');
 
@@ -68,6 +124,7 @@ Route::middleware('auth')->group(function () {
     // Đơn hàng của tôi
     Route::get('/orders', [UserProfileController::class, 'showOrders'])->name('orders');
     Route::get('/orders/{id}', [UserProfileController::class, 'showOrderDetail'])->name('order.detail');
+    Route::post('/order/{id}/cancel', [UserProfileController::class, 'cancelOrder'])->name('order.cancel');
     Route::get('/profile/orders', [UserProfileController::class, 'showOrders'])->name('orders');
 });
 

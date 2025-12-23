@@ -169,7 +169,7 @@
                         <div class="current-image-section">
                             <label class="form-label">Ảnh Hiện tại:</label>
                             <div class="current-image-wrapper">
-                                <img src="{{ $product->image ? asset($product->image) : asset('images/placeholder.png') }}" alt="{{ $product->name }}" id="currentImage">
+                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" id="currentImage">
                             </div>
                         </div>
 

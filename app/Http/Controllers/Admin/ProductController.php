@@ -72,15 +72,22 @@ class ProductController extends Controller
             'is_featured' => 'boolean',
         ]);
         
-        // 1. Xử lý ảnh và lưu vào Storage
-        $imagePath = $request->file('image')->store('products', 'public');
+        // 1. Xử lý ảnh
+        // CÁCH 1: Lưu vào storage (cần symlink)
+        // $imagePath = $request->file('image')->store('products', 'public');
+        
+        // CÁCH 2: Lưu trực tiếp vào public (không cần symlink)
+        $image = $request->file('image');
+        $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('assets/images/products'), $imageName);
+        $imagePath = 'assets/images/products/' . $imageName;
         
         // 2. Tạo Slug
         $validatedData['slug'] = Str::slug($validatedData['name']);
         
         // 3. Tạo sản phẩm
         Product::create(array_merge($validatedData, [
-            'image' => Storage::url($imagePath),
+            'image' => $imagePath, // Lưu: assets/images/products/123_abc.jpg
             'is_featured' => $request->has('is_featured'),
         ]));
 
@@ -125,9 +132,19 @@ class ProductController extends Controller
 
         // 2. Xử lý Ảnh mới (Nếu có)
         if ($request->hasFile('image')) {
-            Storage::disk('public')->delete(str_replace('storage/', '', $product->image)); // Xóa ảnh cũ
-            $imagePath = $request->file('image')->store('products', 'public');
-            $validatedData['image'] = Storage::url($imagePath); // Lưu URL công khai mới
+            // Xóa ảnh cũ (chỉ xóa nếu là file local, không phải URL)
+            if ($product->image && !str_starts_with($product->image, 'http')) {
+                $oldImagePath = public_path($product->image);
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+            
+            // Lưu ảnh mới vào public
+            $image = $request->file('image');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('assets/images/products'), $imageName);
+            $validatedData['image'] = 'assets/images/products/' . $imageName;
         } else {
             unset($validatedData['image']); // Không cập nhật nếu không có file mới
         }
@@ -152,9 +169,14 @@ class ProductController extends Controller
             return $redirect;
         }
         $product = Product::findOrFail($id);
-        // Xóa ảnh khỏi storage
-        // Storage::disk('public')->delete(str_replace('/storage/', 'public/', $product->image));
-        Storage::disk('public')->delete(str_replace('storage/', '', $product->image));
+        
+        // Xóa ảnh khỏi public (nếu là file local)
+        if ($product->image && !str_starts_with($product->image, 'http')) {
+            $imagePath = public_path($product->image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
         
         $product->delete();
         

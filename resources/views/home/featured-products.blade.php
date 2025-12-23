@@ -17,7 +17,7 @@
                     <a href="{{ route('product.detail', ['id' => $product->id]) }}" class="product-item">
                         
                         <div class="product-item__img-wrapper">
-                            <img src="{{ $product->image ? asset($product->image) : asset('images/placeholder.png') }}" alt="{{ $product->name }}" class="product-item__img">
+                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="product-item__img">
                             
                             @if($product->created_at > now()->subDays(30)) 
                                 <span class="product-item__badge">Mới</span>

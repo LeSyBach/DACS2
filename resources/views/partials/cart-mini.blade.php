@@ -39,11 +39,13 @@
           if ($item instanceof \App\Models\CartItem) {
               // Dữ liệu từ Database (Đã đăng nhập)
               $id          = $item->product_id; 
-              $product     = $item->product; 
+              $product     = $item->product;
+              $variant     = $item->variant;
               $quantity    = $item->quantity;
-              $price       = $product->price ?? 0;
+              $price       = $variant ? $variant->price : ($product->price ?? 0);
               $productName = $product->name ?? 'Sản phẩm không rõ';
-              $image       = $product->image ?? '';
+              $image       = ($variant && $variant->image) ? $variant->image : ($product->image ?? '');
+              $variantName = $variant ? $variant->display_name : null;
           } else {
               // Dữ liệu từ Session (Chưa đăng nhập)
               $id          = $item['product_id'] ?? null;
@@ -51,6 +53,7 @@
               $price       = $item['price'];
               $productName = $item['name'];
               $image       = $item['image'];
+              $variantName = $item['variant_name'] ?? null;
           }
           
           $itemTotal       = $price * $quantity;
@@ -63,7 +66,12 @@
             <img src="{{ $image }}" alt="{{ $productName }}" class="modal-cart__product-img">
             
             <div class="modal-cart__product-info">
-              <h4 class="modal-cart__product-name">{{ $productName }}</h4>
+              <h4 class="modal-cart__product-name">
+                {{ $productName }}
+                @if($variantName)
+                  <span class="variant-badge">{{ $variantName }}</span>
+                @endif
+              </h4>
               
               <div class="modal-cart__actions">
                 <div class="modal-cart__quantity-control">

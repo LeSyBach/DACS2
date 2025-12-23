@@ -73,7 +73,7 @@
                                     data-name="{{ strtolower($product->name) }}">
                                     <td data-label="ID">{{ $product->id }}</td>
                                     <td data-label="Ảnh">
-                                        <img src="{{ $product->image ? asset($product->image) : asset('images/placeholder.png') }}" alt="{{ $product->name }}" class="product-thumb">
+                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="product-thumb">
                                     </td>
                                     <td data-label="Tên SP">{{ $product->name }}</td>
                                     <td data-label="Giá" class="price-col">{{ number_format($product->price, 0, ',', '.') }}₫</td>

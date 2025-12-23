@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use App\Models\Order;
 
 class UserProfileController extends Controller
 {
@@ -89,6 +91,67 @@ class UserProfileController extends Controller
                     ->findOrFail($id); 
         
         return view('profile.order_detail', compact('order'));
+    }
+
+    /**
+     * Hủy đơn hàng (chỉ được phép khi status = pending)
+     */
+    public function cancelOrder(Request $request, $id)
+    {
+        try {
+            Log::info('Cancel order request', [
+                'order_id' => $id,
+                'user_id' => Auth::id(),
+                'reason' => $request->reason
+            ]);
+
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            
+            // Tìm đơn hàng của user
+            $order = $user->orders()->findOrFail($id);
+            
+            Log::info('Order found', [
+                'order_id' => $order->id,
+                'current_status' => $order->status
+            ]);
+            
+            // Kiểm tra trạng thái đơn hàng
+            if ($order->status !== 'pending') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể hủy đơn hàng đã được xác nhận!'
+                ], 400);
+            }
+            
+            // Cập nhật trạng thái thành cancelled
+            $order->status = 'cancelled';
+            
+            // Lưu lý do hủy nếu có
+            if ($request->has('reason') && !empty($request->reason)) {
+                $order->note = ($order->note ? $order->note . "\n\n" : '') . 'Lý do hủy: ' . $request->reason;
+            }
+            
+            $order->save();
+            
+            Log::info('Order cancelled successfully', ['order_id' => $order->id]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã hủy đơn hàng #' . $order->id . ' thành công!'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error cancelling order', [
+                'order_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 

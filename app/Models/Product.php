@@ -81,6 +81,35 @@ class Product extends Model
         return $this->hasOne(ProductVariant::class)->where('is_default', true);
     }
 
+    /**
+     * Accessor để tự động tạo URL ảnh đúng
+     * Xử lý cả ảnh local và ảnh từ URL bên ngoài
+     */
+    public function getImageUrlAttribute()
+    {
+        if (empty($this->image)) {
+            return asset('images/placeholder.png');
+        }
+        
+        // Nếu là URL đầy đủ (http/https) thì return luôn
+        if (str_starts_with($this->image, 'http')) {
+            return $this->image;
+        }
+        
+        // Nếu bắt đầu bằng /storage thì dùng asset
+        if (str_starts_with($this->image, '/storage')) {
+            return asset($this->image);
+        }
+        
+        // Nếu bắt đầu bằng assets/ (lưu trong public/assets)
+        if (str_starts_with($this->image, 'assets/')) {
+            return asset($this->image);
+        }
+        
+        // Còn lại là đường dẫn relative trong storage (products/abc.jpg)
+        return asset('storage/' . $this->image);
+    }
+
     // Kiểm tra có variants không
     public function hasVariants()
     {

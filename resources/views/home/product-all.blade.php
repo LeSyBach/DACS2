@@ -22,7 +22,7 @@
                     <div class="col l-3 m-6 c-12" >
                         <a href="{{ route('product.detail', ['id' => $product->id]) }}" class="product-item">
                             <div class="product-item__img-wrapper">
-                                <img src="{{ $product->image ? asset($product->image) : asset('images/placeholder.png') }}" alt="{{ $product->name }}" class="product-item__img">
+                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="product-item__img">
                                 @if(optional($product->created_at)->gt(now()->subDays(30)))
                                     <span class="product-item__badge">Mới</span>
                                 @endif
