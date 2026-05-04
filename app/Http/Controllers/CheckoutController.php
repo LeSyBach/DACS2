@@ -21,7 +21,7 @@ class CheckoutController extends Controller
     public function showCheckoutForm()
     {
         $cartItems = Auth::check() 
-            ? CartItem::where('user_id', Auth::id())->with('product')->get()
+            ? CartItem::where('user_id', Auth::id())->with(['product', 'variant'])->get()
             : session()->get('cart', []);
 
         if (empty($cartItems) || (is_object($cartItems) && $cartItems->isEmpty()) || count($cartItems) == 0) {
@@ -62,7 +62,7 @@ class CheckoutController extends Controller
         }
         
         $cartItems = Auth::check() 
-            ? CartItem::where('user_id', Auth::id())->with('product')->get()
+            ? CartItem::where('user_id', Auth::id())->with(['product', 'variant'])->get()
             : session()->get('cart', []);
 
         $subtotal = $this->calculateCartTotal($cartItems);
@@ -93,7 +93,7 @@ class CheckoutController extends Controller
     
     // 2. Lấy Giỏ hàng (DB hoặc Session)
     $cartItems = $userId 
-        ? CartItem::where('user_id', $userId)->with('product')->get()
+        ? CartItem::where('user_id', $userId)->with(['product', 'variant'])->get()
         : session()->get('cart', []);
 
     if (empty($cartItems)) {
@@ -164,7 +164,12 @@ class CheckoutController extends Controller
         $total = 0;
         foreach ($cartItems as $item) {
             if (is_object($item)) { // DB Item
-                $price = $item->product->price ?? 0;
+                // Ưu tiên lấy giá từ variant trước, nếu không có mới lấy từ product
+                if ($item->variant) {
+                    $price = $item->variant->price;
+                } else {
+                    $price = $item->product->price ?? 0;
+                }
                 $quantity = $item->quantity;
             } else { // Session Item
                 $price = $item['price'] ?? 0;
@@ -190,23 +195,56 @@ class CheckoutController extends Controller
             'payment_status' => ($paymentMethod === 'cod') ? 'unpaid' : 'pending',
         ]);
 
-        // 2. Chuyển Cart Items thành Order Items
+        // 2. Chuyển Cart Items thành Order Items VÀ GIẢM SỐ LƯỢNG
         $orderItemsData = [];
         foreach ($cartItems as $item) {
-            $price = is_object($item) ? ($item->product->price ?? 0) : $item['price'];
-            $quantity = is_object($item) ? $item->quantity : $item['quantity'];
-            $productId = is_object($item) ? $item->product_id : $item['product_id'];
+            // LẤY GIÁ ĐÚNG: Ưu tiên variant trước, nếu không có mới lấy product
+            if (is_object($item)) {
+                // Từ database: kiểm tra variant trước
+                if ($item->variant) {
+                    $price = $item->variant->price;
+                } else {
+                    $price = $item->product->price ?? 0;
+                }
+                $quantity = $item->quantity;
+                $productId = $item->product_id;
+                $variantId = $item->variant_id;
+            } else {
+                // Từ session
+                $price = $item['price'];
+                $quantity = $item['quantity'];
+                $productId = $item['product_id'];
+                $variantId = $item['variant_id'] ?? null;
+            }
 
             // LẤY TÊN SẢN PHẨM: Cần thiết vì cột product_name là NOT NULL
             $productName = is_object($item) 
                 ? ($item->product->name ?? 'Sản phẩm không rõ') 
                 : ($item['name'] ?? 'Sản phẩm không rõ'); 
             
+            // GIẢM SỐ LƯỢNG SẢN PHẨM/BIẾN THỂ
+            if ($variantId) {
+                // Nếu có biến thể → giảm stock của variant
+                $variant = \App\Models\ProductVariant::find($variantId);
+                if ($variant && $variant->stock >= $quantity) {
+                    $variant->stock -= $quantity;
+                    $variant->save();
+                }
+            } else {
+                // Nếu không có biến thể → giảm quantity của product
+                $product = \App\Models\Product::find($productId);
+                if ($product && $product->quantity >= $quantity) {
+                    $product->quantity -= $quantity;
+                    $product->save();
+                }
+            }
+            
             $orderItemsData[] = new OrderItem([
                 'product_id' => $productId,
                 'product_name' => $productName, 
                 'quantity' => $quantity,
                 'price' => $price,
+                'variant_id' => $variantId, // Lưu variant_id để biết hoàn lại đúng
             ]);
         }
 

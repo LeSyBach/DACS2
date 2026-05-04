@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProductVariantController extends Controller
 {
@@ -42,7 +41,7 @@ class ProductVariantController extends Controller
      */
     public function store(Request $request, Product $product)
     {
-        // ✅ SỬA VALIDATION - Giá bán BẮT BUỘC
+        
         $request->validate([
             'old_price' => 'required|numeric|min:0',
             'price' => 'required|numeric|min:0|lt:old_price', // ✅ THÊM required
@@ -64,7 +63,11 @@ class ProductVariantController extends Controller
         $variant->is_default = $request->has('is_default');
 
         if ($request->hasFile('image')) {
-            $variant->image = $request->file('image')->store('products/variants', 'public');
+            // Lưu trực tiếp vào public (không cần symlink)
+            $image = $request->file('image');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('assets/images/products/variants'), $imageName);
+            $variant->image = 'assets/images/products/variants/' . $imageName;
         }
 
         $variant->save();
@@ -94,7 +97,7 @@ class ProductVariantController extends Controller
         // ✅ SỬA VALIDATION - Giá bán BẮT BUỘC
         $request->validate([
             'old_price' => 'required|numeric|min:0',
-            'price' => 'required|numeric|min:0|lt:old_price', // ✅ THÊM required
+            'price' => 'required|numeric|min:0|lt:old_price', 
             'stock' => 'required|integer|min:0',
             'color' => 'nullable|string|max:50',
             'storage' => 'nullable|string|max:50',
@@ -113,11 +116,18 @@ class ProductVariantController extends Controller
 
         // Xử lý ảnh mới
         if ($request->hasFile('image')) {
-            // Xóa ảnh cũ
-            if ($variant->image) {
-                Storage::disk('public')->delete($variant->image);
+            // Xóa ảnh cũ (chỉ xóa nếu là file local)
+            if ($variant->image && !str_starts_with($variant->image, 'http')) {
+                $oldImagePath = public_path($variant->image);
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
             }
-            $variant->image = $request->file('image')->store('products/variants', 'public');
+            // Lưu ảnh mới vào public (không cần symlink)
+            $image = $request->file('image');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('assets/images/products/variants'), $imageName);
+            $variant->image = 'assets/images/products/variants/' . $imageName;
         }
 
         $variant->save();
@@ -140,9 +150,12 @@ class ProductVariantController extends Controller
      */
     public function destroy(Product $product, ProductVariant $variant)
     {
-        // Xóa ảnh
-        if ($variant->image) {
-            Storage::disk('public')->delete($variant->image);
+        // Xóa ảnh (chỉ xóa nếu là file local)
+        if ($variant->image && !str_starts_with($variant->image, 'http')) {
+            $imagePath = public_path($variant->image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
         }
         
         $variant->delete();

@@ -103,7 +103,8 @@ class CartController extends Controller
             $cart = session()->get('cart', []);
             
             // Tạo key duy nhất cho product + variant
-            $cartKey = $variantId ? $id . '_' . $variantId : $id;
+            // Sử dụng format: product_id:variant_id hoặc product_id:0 nếu không có variant
+            $cartKey = $id . ':' . ($variantId ?: '0');
             
             if (isset($cart[$cartKey])) {
                 $cart[$cartKey]['quantity'] += $quantity;
@@ -184,19 +185,23 @@ class CartController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            CartItem::where('user_id', $user->id)->where('product_id', $id)->delete();
+            // XÓA ĐÚNG CART ITEM theo ID (không phải product_id)
+            $cartItem = CartItem::where('user_id', $user->id)->where('id', $id)->first();
+            
+            if ($cartItem) {
+                $cartItem->delete();
+            }
             
             // Lấy lại dữ liệu mới từ DB để render lại View
-            $cartItemsDb = CartItem::where('user_id', $user->id)->with('product')->get();
+            $cartItemsDb = CartItem::where('user_id', $user->id)->with(['product', 'variant'])->get();
             $newCartHTML = View::make('partials.cart-mini', ['cartData' => $cartItemsDb])->render(); 
             $countUnique = $cartItemsDb->count();
 
             return response()->json([
                 'status' => 'success', 
-                'message' => 'Đã xóa sản phẩm khỏi DB!',
+                'message' => 'Đã xóa sản phẩm khỏi giỏ hàng!',
                 'cartCount' => $countUnique,
                 'cartHTML'  => $newCartHTML,
-                // Cần hàm tính tổng tiền từ DB nếu cần
             ]);
         } else {
             // Logic cũ cho Session (Giữ nguyên)
@@ -226,12 +231,12 @@ class CartController extends Controller
         if (Auth::check()) {
             $user = Auth::user();
 
-            // Lấy cartItem theo user và product_id
+            // Lấy cartItem theo ID (không phải product_id)
             $cartItem = CartItem::where('user_id', $user->id)
-                                ->where('product_id', $id)
-                                ->with('product')
+                                ->where('id', $id)
+                                ->with(['product', 'variant'])
                                 ->first();
-
+            
             if ($cartItem) {
                 // Tăng hoặc giảm số lượng
                 if ($action === 'increase') {
@@ -245,12 +250,15 @@ class CartController extends Controller
                     $cartItem->delete();
 
                     // Tính lại tổng tiền sau khi xóa
-                    $cartItemsDb = CartItem::where('user_id', $user->id)->with('product')->get();
+                    $cartItemsDb = CartItem::where('user_id', $user->id)->with(['product', 'variant'])->get();
                     $newCartHTML = View::make('partials.cart-mini', ['cartData' => $cartItemsDb])->render();
                     $cartTotal = CartItem::where('user_id', $user->id)
-                                        ->with('product')
+                                        ->with(['product', 'variant'])
                                         ->get()
-                                        ->sum(fn($item) => $item->product->price * $item->quantity);
+                                        ->sum(function($item) {
+                                            $price = $item->variant ? $item->variant->price : $item->product->price;
+                                            return $price * $item->quantity;
+                                        });
 
                     return response()->json([
                         'status' => 'remove',
@@ -267,11 +275,15 @@ class CartController extends Controller
                 $cartItem->save();
 
                 // Tính lại giá sản phẩm và tổng giỏ hàng
-                $itemTotal = $cartItem->product->price * $cartItem->quantity;
+                $price = $cartItem->variant ? $cartItem->variant->price : $cartItem->product->price;
+                $itemTotal = $price * $cartItem->quantity;
                 $cartTotal = CartItem::where('user_id', $user->id)
-                                    ->with('product')
+                                    ->with(['product', 'variant'])
                                     ->get()
-                                    ->sum(fn($item) => $item->product->price * $item->quantity);
+                                    ->sum(function($item) {
+                                        $price = $item->variant ? $item->variant->price : $item->product->price;
+                                        return $price * $item->quantity;
+                                    });
 
                 return response()->json([
                     'status'   => 'update',

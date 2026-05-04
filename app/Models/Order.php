@@ -14,9 +14,9 @@ class Order extends Model
      */
     protected $fillable = [
         'user_id',
-        'customer_name',    // <--- PHẢI CÓ
-        'customer_phone',   // <--- PHẢI CÓ
-        'customer_email',   // <--- PHẢI CÓ
+        'customer_name',    
+        'customer_phone',   
+        'customer_email',   
         'shipping_address',
         'total_price',
         'status',
@@ -24,31 +24,21 @@ class Order extends Model
         'payment_status', // pending, paid, failed
     ];
 
-    // --- CÁC MỐI QUAN HỆ (Relationships) ---
-
-    /**
-     * 1. Một đơn hàng thuộc về một người dùng (User)
-     * user_id trong bảng orders liên kết với id trong bảng users.
-     */
+    
     public function user()
     {
         // Liên kết với Model App\Models\User
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * 2. Một đơn hàng có nhiều chi tiết đơn hàng (OrderItem)
-     * Đây là quan hệ 'hasMany'.
-     */
+   
     public function items()
     {
         // Liên kết với Model App\Models\OrderItem
         return $this->hasMany(OrderItem::class);
     }
 
-    /**
-     * 3. (Tùy chọn) Tính toán tổng số lượng sản phẩm trong đơn hàng
-     */
+    
     public function getTotalQuantityAttribute()
     {
         return $this->items->sum('quantity');

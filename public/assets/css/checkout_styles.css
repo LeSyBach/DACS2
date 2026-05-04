@@ -515,4 +515,5 @@ body {
     /* Đã được định nghĩa ở .btn-primary (màu xanh ngọc) */
     background-color: var(--color-primary); 
     color: white; 
+    margin-top: 0;
 }

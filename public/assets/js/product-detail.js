@@ -32,7 +32,16 @@ document.addEventListener("DOMContentLoaded", function () {
         const variantButtons = document.querySelectorAll(".variant-option");
 
         variantButtons.forEach((button) => {
-            button.addEventListener("click", function () {
+            button.addEventListener("click", function (event) {
+                // QUAN TRỌNG: Ngăn form submit khi click vào button variant
+                event.preventDefault();
+                event.stopPropagation();
+
+                // Không cho click vào button bị disabled
+                if (this.disabled || this.classList.contains("unavailable")) {
+                    return;
+                }
+
                 const type = this.getAttribute("data-type");
                 const value = this.getAttribute("data-value");
 
@@ -88,6 +97,61 @@ document.addEventListener("DOMContentLoaded", function () {
             // Reset tất cả về trạng thái bình thường
             document.querySelectorAll(".variant-option").forEach((btn) => {
                 btn.classList.remove("unavailable");
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.cursor = "pointer";
+            });
+
+            // DISABLE các biến thể hết hàng
+            document.querySelectorAll(".variant-option").forEach((btn) => {
+                const type = btn.getAttribute("data-type");
+                const value = btn.getAttribute("data-value");
+
+                // Kiểm tra xem tổ hợp này có stock không
+                let hasStock = false;
+
+                if (type === "color") {
+                    // Nếu đã chọn storage, kiểm tra tổ hợp color + storage
+                    if (selectedStorage) {
+                        const variant = productVariants.find(
+                            (v) =>
+                                v.color === value &&
+                                v.storage === selectedStorage &&
+                                v.stock > 0
+                        );
+                        hasStock = !!variant;
+                    } else {
+                        // Chưa chọn storage, kiểm tra xem màu này có bất kỳ biến thể nào còn hàng không
+                        hasStock = productVariants.some(
+                            (v) => v.color === value && v.stock > 0
+                        );
+                    }
+                } else if (type === "storage") {
+                    // Nếu đã chọn color, kiểm tra tổ hợp color + storage
+                    if (selectedColor) {
+                        const variant = productVariants.find(
+                            (v) =>
+                                v.storage === value &&
+                                v.color === selectedColor &&
+                                v.stock > 0
+                        );
+                        hasStock = !!variant;
+                    } else {
+                        // Chưa chọn color, kiểm tra xem dung lượng này có bất kỳ biến thể nào còn hàng không
+                        hasStock = productVariants.some(
+                            (v) => v.storage === value && v.stock > 0
+                        );
+                    }
+                }
+
+                // Nếu không còn stock, disable button
+                if (!hasStock) {
+                    btn.disabled = true;
+                    btn.style.opacity = "0.4";
+                    btn.style.cursor = "not-allowed";
+                    btn.classList.add("unavailable");
+                    btn.title = "Hết hàng";
+                }
             });
 
             // Nếu đã chọn màu, highlight các dung lượng có sẵn
@@ -197,24 +261,36 @@ document.addEventListener("DOMContentLoaded", function () {
                         matchedVariant.image_url || matchedVariant.image;
                 }
 
-                // Cập nhật stock
+                // Cập nhật stock và giới hạn input
                 const qtyInput = document.querySelector(".qty-input");
                 if (qtyInput) {
                     qtyInput.setAttribute("max", matchedVariant.stock);
+                    // Nếu giá trị hiện tại lớn hơn stock, giảm xuống
                     if (parseInt(qtyInput.value) > matchedVariant.stock) {
-                        qtyInput.value = matchedVariant.stock;
+                        qtyInput.value =
+                            matchedVariant.stock > 0 ? matchedVariant.stock : 1;
+                    }
+                    // Nếu stock = 0, set input = 0 và disable
+                    if (matchedVariant.stock <= 0) {
+                        qtyInput.value = 0;
+                        qtyInput.disabled = true;
+                    } else {
+                        qtyInput.disabled = false;
                     }
                 }
 
-                // Cập nhật trạng thái còn hàng
-                const statusSpan = document.querySelector(".status");
-                if (statusSpan) {
+                // Cập nhật trạng thái còn hàng và hiển thị số lượng
+                const stockStatus = document.getElementById("stock-status");
+                const stockQuantity = document.getElementById("stock-quantity");
+                if (stockStatus) {
                     if (matchedVariant.stock > 0) {
-                        statusSpan.textContent = "Còn hàng";
-                        statusSpan.style.color = "#00c030";
+                        stockStatus.innerHTML =
+                            '<span style="color: #00c030;">Còn hàng: <strong id="stock-quantity">' +
+                            matchedVariant.stock +
+                            "</strong></span>";
                     } else {
-                        statusSpan.textContent = "Hết hàng";
-                        statusSpan.style.color = "#ff424f";
+                        stockStatus.innerHTML =
+                            '<span style="color: #ff424f;">Hết hàng</span>';
                     }
                 }
 
@@ -259,20 +335,43 @@ document.addEventListener("DOMContentLoaded", function () {
 // public/assets/js/product-detail.js
 
 document.addEventListener("DOMContentLoaded", function () {
-    // --- PHẦN 1: TĂNG GIẢM SỐ LƯỢNG ---
+    // --- PHẦN 1: TĂNG GIẢM SỐ LƯỢNG VỚI GIỚI HẠN ---
     const minusBtn = document.querySelector(".qty-btn.minus");
     const plusBtn = document.querySelector(".qty-btn.plus");
     const qtyInput = document.querySelector(".qty-input");
 
     if (minusBtn && plusBtn && qtyInput) {
-        plusBtn.addEventListener("click", function () {
+        // Xử lý nút tăng
+        plusBtn.addEventListener("click", function (event) {
+            event.preventDefault(); // Ngăn form submit
             let val = parseInt(qtyInput.value) || 0;
-            qtyInput.value = val + 1;
+            let max = parseInt(qtyInput.getAttribute("max")) || 999;
+            if (val < max) {
+                qtyInput.value = val + 1;
+            }
         });
 
-        minusBtn.addEventListener("click", function () {
+        // Xử lý nút giảm
+        minusBtn.addEventListener("click", function (event) {
+            event.preventDefault(); // Ngăn form submit
             let val = parseInt(qtyInput.value) || 0;
-            if (val > 1) qtyInput.value = val - 1;
+            if (val > 1) {
+                qtyInput.value = val - 1;
+            }
+        });
+
+        // Xử lý khi nhập trực tiếp vào input
+        qtyInput.addEventListener("input", function () {
+            let val = parseInt(this.value) || 0;
+            let max = parseInt(this.getAttribute("max")) || 999;
+            let min = parseInt(this.getAttribute("min")) || 1;
+
+            // Giới hạn giá trị
+            if (val > max) {
+                this.value = max;
+            } else if (val < min) {
+                this.value = min;
+            }
         });
     }
 
@@ -282,6 +381,22 @@ document.addEventListener("DOMContentLoaded", function () {
     if (addCartForm) {
         addCartForm.addEventListener("submit", function (e) {
             e.preventDefault(); // 1. Chặn load trang
+
+            // Kiểm tra số lượng trước khi submit
+            const qtyInput = document.querySelector(".qty-input");
+            const quantity = parseInt(qtyInput.value) || 0;
+            const maxStock = parseInt(qtyInput.getAttribute("max")) || 0;
+
+            if (quantity <= 0) {
+                showToast("Vui lòng chọn số lượng!", "error");
+                return;
+            }
+
+            if (quantity > maxStock) {
+                showToast(`Chỉ còn ${maxStock} sản phẩm trong kho!`, "error");
+                qtyInput.value = maxStock;
+                return;
+            }
 
             const url = this.action;
             const formData = new FormData(this);

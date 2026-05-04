@@ -23,7 +23,6 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            // Thêm validation cho các cột mới nếu cần thiết
             // 'phone' => 'nullable|string|max:20', 
             // 'address' => 'nullable|string|max:255',
         ]);
@@ -34,7 +33,6 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => $request->password,
             'role' => 'customer',
-            // Thêm các cột mới (nếu bạn muốn lưu chúng khi đăng ký)
             // 'phone' => $request->phone ?? null, 
             // 'address' => $request->address ?? null,
         ]);
@@ -99,7 +97,7 @@ class AuthController extends Controller
         $user->otp_expires_at = Carbon::now()->addMinutes(10); 
         $user->save();
 
-        // Gửi Email (Bỏ comment khi đã cấu hình Mail)
+        // Gửi Email 
         Mail::to($user->email)->send(new OTPEmail($otp));
 
         // Trả về JSON để JS chuyển đổi Form 3 -> Form 4

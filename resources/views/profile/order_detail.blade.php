@@ -148,16 +148,43 @@
             @foreach($order->items as $item)
                 <div class="customer-product-item">
                     <div class="customer-product-image">
-                        <img src="{{ $item->product->image_url }}" 
+                        @php
+                            $image = $item->variant ? $item->variant->image_url : $item->product->image_url;
+                        @endphp
+                        <img src="{{ $image }}" 
                              alt="{{ $item->product->name }}" 
                              onerror="this.src='{{ asset('images/placeholder.png') }}'">
                     </div>
                     <div class="customer-product-info">
-                        <h3 class="customer-product-name">{{ $item->product_name }}</h3>
+                        <h3 class="customer-product-name">
+                            {{ $item->product_name }}
+                            @if($item->variant)
+                                <span class="variant-badge" style="font-size: 0.85em; color: #666; font-weight: normal; display: block; margin-top: 4px;">
+                                    <i class="fa-solid fa-tag"></i> {{ $item->variant->display_name }}
+                                </span>
+                            @endif
+                        </h3>
                         <div class="customer-product-meta">
                             <span class="customer-product-price">{{ number_format($item->price, 0, ',', '.') }}₫</span>
                             <span class="customer-product-qty">x {{ $item->quantity }}</span>
                         </div>
+                        
+                        {{-- NÚT ĐÁNH GIÁ (CHỈ HIỆN KHI ĐƠN HÀNG HOÀN TẤT) --}}
+                        @if($order->status === 'completed' && $order->payment_status === 'paid')
+                            @php
+                                $userReviewed = App\Models\Review::userReviewed(auth()->id(), $item->product_id);
+                            @endphp
+                            
+                            @if(!$userReviewed)
+                                <button class="btn-review-product" onclick="openReviewModalForProduct({{ $item->product_id }}, '{{ addslashes($item->product_name) }}')">
+                                    <i class="fas fa-star"></i> Đánh giá sản phẩm
+                                </button>
+                            @else
+                                <span class="reviewed-badge">
+                                    <i class="fas fa-check-circle"></i> Đã đánh giá
+                                </span>
+                            @endif
+                        @endif
                     </div>
                     <div class="customer-product-total">
                         {{ number_format($item->price * $item->quantity, 0, ',', '.') }}₫
@@ -189,8 +216,49 @@
             </div>
         </div>
     </div>
+
+    {{-- REVIEW MODAL (DÙNG CHUNG) --}}
+    @include('reviews.partials.review-modal-dynamic')
 @endsection
 
 @push('css')
     <link rel="stylesheet" href="{{ asset('assets/css/oder.css') }}">
+    <style>
+    .btn-review-product {
+        background: #0066cc;
+        color: #fff;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        margin-top: 8px;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .btn-review-product:hover {
+        background: #0052a3;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    }
+    
+    .reviewed-badge {
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        margin-top: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .reviewed-badge i {
+        color: #4caf50;
+    }
+    </style>
 @endpush

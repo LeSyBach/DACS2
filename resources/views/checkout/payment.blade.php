@@ -23,7 +23,7 @@
                 <div class="col c-12 l-4 payment-options-wrapper">
                     <div class="checkout-card payment-options-card">
                         
-                        <h3 class="options-heading">Choose thanh toán phương thức</h3>
+                        <h3 class="options-heading">Chọn phương thức thanh toán</h3>
                         
                         <div class="payment-options">
                             @error('payment_method')
@@ -88,6 +88,22 @@
 
 @push('css')
     <link rel="stylesheet" href="{{ asset('assets/css/checkout_styles.css') }}">
+    <style>
+        /* Custom CSS cho spacing và font size */
+        .payment-options__label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .payment-options__label i {
+            margin-left: 8px;
+        }
+        
+        .payment-options__label {
+            font-size: 15px;
+        }
+    </style>
 @endpush
 
 @push('scripts')

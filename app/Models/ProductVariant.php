@@ -16,8 +16,8 @@ class ProductVariant extends Model
         'product_id',
         'color',
         'storage',
-        'old_price',  // Giá gốc (giá cũ) - tương tự Product
-        'price',      // Giá bán (giá hiện tại) - tương tự Product
+        'old_price', 
+        'price',      
         'stock',
         'sku',
         'image',

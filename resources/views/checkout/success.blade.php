@@ -53,4 +53,63 @@
 
 @push('css')
     <link rel="stylesheet" href="{{ asset('assets/css/checkout_styles.css') }}">
+    <style>
+        /* Fix buttons alignment */
+        .success-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-continue-shopping,
+        .btn-view-order {
+            flex: 1;
+            max-width: 300px;
+            text-align: center;
+            text-decoration: none !important;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-continue-shopping {
+            background: #17a2b8;
+            color: #fff;
+            border: none;
+        }
+        
+        .btn-continue-shopping:hover {
+            background: #138496;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+        }
+        
+        .btn-view-order {
+            background: #6c757d;
+            color: #fff;
+            border: none;
+        }
+        
+        .btn-view-order:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .success-actions {
+                flex-direction: column;
+            }
+            
+            .btn-continue-shopping,
+            .btn-view-order {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
 @endpush

@@ -38,16 +38,19 @@
           // Xử lý dữ liệu Giỏ hàng (Mảng Session vs. Model DB)
           if ($item instanceof \App\Models\CartItem) {
               // Dữ liệu từ Database (Đã đăng nhập)
+              $cartItemId  = $item->id;  // ID của cart_item (QUAN TRỌNG)
               $id          = $item->product_id; 
               $product     = $item->product;
               $variant     = $item->variant;
               $quantity    = $item->quantity;
               $price       = $variant ? $variant->price : ($product->price ?? 0);
               $productName = $product->name ?? 'Sản phẩm không rõ';
-              $image       = ($variant && $variant->image) ? $variant->image : ($product->image ?? '');
+              $image       = ($variant && $variant->image) ? $variant->image_url : ($product->image_url ?? '');
               $variantName = $variant ? $variant->display_name : null;
           } else {
               // Dữ liệu từ Session (Chưa đăng nhập)
+              // cartItemId phải khớp với key trong session cart (product_id:variant_id hoặc product_id:0)
+              $cartItemId  = $item['product_id'] . ':' . ($item['variant_id'] ?? '0');
               $id          = $item['product_id'] ?? null;
               $quantity    = $item['quantity'];
               $price       = $item['price'];
@@ -62,7 +65,7 @@
 
         {{-- Đảm bảo sản phẩm có ID để hiển thị --}}
         @if($id) 
-          <li class="modal-cart__product-item" id="cart-item-{{ $id }}">
+          <li class="modal-cart__product-item" id="cart-item-{{ $cartItemId }}">
             <img src="{{ $image }}" alt="{{ $productName }}" class="modal-cart__product-img">
             
             <div class="modal-cart__product-info">
@@ -76,18 +79,18 @@
               <div class="modal-cart__actions">
                 <div class="modal-cart__quantity-control">
                   <a href="javascript:void(0)" 
-                     data-url="{{ route('cart.update', ['id' => $id, 'action' => 'decrease']) }}" 
-                     data-id="{{ $id }}" 
+                     data-url="{{ route('cart.update', ['id' => $cartItemId, 'action' => 'decrease']) }}" 
+                     data-id="{{ $cartItemId }}" 
                      class="modal-cart__btn--decrease ajax-cart-btn"
                      style="text-decoration: none; display:flex; align-items:center; justify-content:center;">
                     -
                   </a>
                   
-                  <span class="modal-cart__quantity" id="qty-{{ $id }}">{{ $quantity }}</span>
+                  <span class="modal-cart__quantity" id="qty-{{ $cartItemId }}">{{ $quantity }}</span>
                   
                   <a href="javascript:void(0)" 
-                     data-url="{{ route('cart.update', ['id' => $id, 'action' => 'increase']) }}" 
-                     data-id="{{ $id }}" 
+                     data-url="{{ route('cart.update', ['id' => $cartItemId, 'action' => 'increase']) }}" 
+                     data-id="{{ $cartItemId }}" 
                      class="modal-cart__btn--increase ajax-cart-btn"
                      style="text-decoration: none; display:flex; align-items:center; justify-content:center;">
                     +
@@ -95,14 +98,14 @@
                 </div>
                 
                 <a href="javascript:void(0)" 
-                   data-id="{{ $id }}" 
-                   data-url="{{ route('cart.remove', ['id' => $id]) }}" 
+                   data-id="{{ $cartItemId }}" 
+                   data-url="{{ route('cart.remove', ['id' => $cartItemId]) }}" 
                    class="modal-cart__remove-btn ajax-remove-btn">
                   <i class="modal-cart__remove-icon fa-regular fa-trash-can"></i>
                 </a>
               </div>
               
-              <span class="modal-cart__product-price" id="price-{{ $id }}">
+              <span class="modal-cart__product-price" id="price-{{ $cartItemId }}">
                 {{ number_format($itemTotal, 0, ',', '.') }} ₫
               </span>
             </div>

@@ -462,13 +462,14 @@
 
 .variant-badge {
     display: inline-block;
-    padding: 2px 8px;
+    padding: 3px 10px;
     margin-left: 6px;
-    background: linear-gradient(135deg, #00877c 0%, #005f57 100%);
-    color: #fff;
+    background: #f8f9fa;
+    color: #00877c;
+    border: 1.5px solid #00877c;
     font-size: 11px;
     font-weight: 600;
-    border-radius: 4px;
+    border-radius: 12px;
 }
 
 .modal-cart__actions {

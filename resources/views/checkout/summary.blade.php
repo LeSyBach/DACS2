@@ -13,20 +13,29 @@
             @php
                 // Xử lý dữ liệu cho Session Array và DB Model
                 if (is_object($item)) { 
-                    $price = $item->product->price ?? 0;
+                    $variant = $item->variant ?? null;
+                    $price = $variant ? $variant->price : ($item->product->price ?? 0);
                     $quantity = $item->quantity;
                     $productName = $item->product->name ?? 'Sản phẩm không rõ';
+                    $variantName = $variant ? $variant->display_name : null;
                 } else {
                     $price = $item['price'] ?? 0;
                     $quantity = $item['quantity'] ?? 0;
                     $productName = $item['name'];
+                    $variantName = $item['variant_name'] ?? null;
                 }
                 $itemTotal = $price * $quantity;
                 $subtotal += $itemTotal;
             @endphp
             
             <li class="summary-product-item">
-                <span class="summary-product-name">{{ $productName }} (x{{ $quantity }})</span>
+                <span class="summary-product-name">
+                    {{ $productName }}
+                    @if($variantName)
+                        <small style="color: #666; font-weight: normal;">({{ $variantName }})</small>
+                    @endif
+                    (x{{ $quantity }})
+                </span>
                 <span class="summary-product-price">{{ number_format($itemTotal, 0, ',', '.') }}₫</span>
             </li>
         @endforeach

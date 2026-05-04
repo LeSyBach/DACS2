@@ -32,12 +32,26 @@
                             <h3 class="product-item__name">{{ $product->name }}</h3>
                             
                             <div class="product-item__rating">
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <span class="product-item__review-count">({{ $product->quantity }} đã bán)</span>
+                                @php
+                                    $avgRating = $product->average_rating;
+                                    $reviewCount = $product->review_count;
+                                @endphp
+                                
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= floor($avgRating))
+                                        <i class="fa-solid fa-star"></i>
+                                    @elseif($i - 0.5 <= $avgRating)
+                                        <i class="fa-solid fa-star-half-alt"></i>
+                                    @else
+                                        <i class="fa-regular fa-star"></i>
+                                    @endif
+                                @endfor
+                                
+                                @if($reviewCount > 0)
+                                    <span class="product-item__review-count">({{ $reviewCount }} đánh giá)</span>
+                                @else
+                                    <span class="product-item__review-count">(Chưa có đánh giá)</span>
+                                @endif
                             </div>
                             
                             <div class="product-item__footer">

@@ -66,11 +66,15 @@
                                     <span>({{ $product->review_count ?? 0 }} đánh giá)</span>
                                 </div>
                                 <span class="meta-divider">|</span>
-                                <span class="status">
+                                <span class="status" id="stock-status">
                                     @php
                                         $stock = $defaultVariant ? $defaultVariant->stock : $product->quantity;
                                     @endphp
-                                    {{ $stock > 0 ? 'Còn hàng' : 'Hết hàng' }}
+                                    @if($stock > 0)
+                                        <span style="color: #00c030;">Còn hàng: <strong id="stock-quantity">{{ $stock }}</strong></span>
+                                    @else
+                                        <span style="color: #ff424f;">Hết hàng</span>
+                                    @endif
                                 </span>
                             </div>
 
@@ -231,6 +235,15 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- REVIEWS SECTION --}}
+    <section class="product-reviews-section">
+        <div class="grid wide">
+            <div class="product-reviews">
+                @include('reviews.partials.reviews-list', ['product' => $product])
             </div>
         </div>
     </section>

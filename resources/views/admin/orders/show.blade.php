@@ -30,13 +30,11 @@
         </div>
     @endif
 
-    <div class="order-detail-layout">
-        
-        {{-- CỘT BÊN TRÁI: BẢNG SẢN PHẨM VÀ THÔNG TIN --}}
+    {{-- HÀNG 1: THÔNG TIN GIAO HÀNG VÀ TRẠNG THÁI (2 CỘT) --}}
+    <div class="order-detail-layout mb-4">
+        {{-- CỘT TRÁI: THÔNG TIN KHÁCH HÀNG & GIAO HÀNG --}}
         <div class="order-detail-main">
-            
-            {{-- THÔNG TIN KHÁCH HÀNG & GIAO HÀNG --}}
-            <div class="admin-table-card mb-4">
+            <div class="admin-table-card">
                 <div class="card-header-custom">
                     <i class="fas fa-user-circle"></i>
                     <h3 class="card-title">Thông tin Khách hàng & Giao hàng</h3>
@@ -70,61 +68,11 @@
                     </div>
                 </div>
             </div>
-
-            {{-- BẢNG SẢN PHẨM CHI TIẾT --}}
-            <div class="admin-table-card">
-                <div class="card-header-custom">
-                    <i class="fas fa-boxes-stacked"></i>
-                    <h3 class="card-title">Sản phẩm đã mua</h3>
-                </div>
-                <div class="card-body-custom p-0">
-                    <div class="order-list-table">
-                        <table class="table order-table order-detail-table">
-                            <thead>
-                                <tr>
-                                    <th>Tên Sản phẩm</th>
-                                    <th>Đơn Giá</th>
-                                    <th>Số lượng</th>
-                                    <th>Thành tiền</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($order->items as $item)
-                                    <tr>
-                                        <td data-label="Tên SP">{{ $item->product_name }}</td>
-                                        <td data-label="Đơn giá" class="price-col">{{ number_format($item->price, 0, ',', '.') }}₫</td>
-                                        <td data-label="SL">{{ $item->quantity }}</td>
-                                        <td data-label="Thành tiền" class="price-col">{{ number_format($item->price * $item->quantity, 0, ',', '.') }}₫</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="3" class="text-right"><strong>Tạm tính:</strong></td>
-                                    <td class="price-col">{{ number_format($subtotal, 0, ',', '.') }}₫</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3" class="text-right"><strong>Phí Vận chuyển:</strong></td>
-                                    <td class="price-col">{{ number_format($shipping_fee, 0, ',', '.') }}₫</td>
-                                </tr>
-                                <tr class="grand-total-row">
-                                    <td colspan="3" class="text-right"><strong>TỔNG THANH TOÁN:</strong></td>
-                                    <td class="grand-total-price">{{ number_format($order->total_price, 0, ',', '.') }}₫</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
         </div>
 
-        
-
-        {{-- CỘT BÊN PHẢI: TRẠNG THÁI VÀ HÀNH ĐỘNG --}}
+        {{-- CỘT PHẢI: THÔNG TIN TRẠNG THÁI --}}
         <div class="order-detail-sidebar">
-            
-            {{-- THÔNG TIN TRẠNG THÁI VÀ THANH TOÁN --}}
-            <div class="admin-table-card mb-4">
+            <div class="admin-table-card">
                 <div class="card-header-custom">
                     <i class="fas fa-info-circle"></i>
                     <h3 class="card-title">Trạng thái Đơn hàng</h3>
@@ -150,9 +98,60 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            {{-- CẬP NHẬT TRẠNG THÁI --}}
-            <div class="admin-table-card mb-4">
+    {{-- HÀNG 2: BẢNG SẢN PHẨM (FULL WIDTH) --}}
+    <div class="admin-table-card mb-4">
+        <div class="card-header-custom">
+            <i class="fas fa-boxes-stacked"></i>
+            <h3 class="card-title">Sản phẩm đã mua</h3>
+        </div>
+        <div class="card-body-custom p-0">
+            <div class="order-list-table">
+                <table class="table order-table order-detail-table">
+                    <thead>
+                        <tr>
+                            <th>Tên Sản phẩm</th>
+                            <th>Đơn Giá</th>
+                            <th>Số lượng</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($order->items as $item)
+                            <tr>
+                                <td data-label="Tên SP">{{ $item->product_name }}</td>
+                                <td data-label="Đơn giá" class="price-col">{{ number_format($item->price, 0, ',', '.') }}₫</td>
+                                <td data-label="SL">{{ $item->quantity }}</td>
+                                <td data-label="Thành tiền" class="price-col">{{ number_format($item->price * $item->quantity, 0, ',', '.') }}₫</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-right"><strong>Tạm tính:</strong></td>
+                            <td class="price-col">{{ number_format($subtotal, 0, ',', '.') }}₫</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-right"><strong>Phí Vận chuyển:</strong></td>
+                            <td class="price-col">{{ number_format($shipping_fee, 0, ',', '.') }}₫</td>
+                        </tr>
+                        <tr class="grand-total-row">
+                            <td colspan="3" class="text-right"><strong>TỔNG THANH TOÁN:</strong></td>
+                            <td class="grand-total-price">{{ number_format($order->total_price, 0, ',', '.') }}₫</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {{-- HÀNG 3: CẬP NHẬT TRẠNG THÁI VÀ HÀNH ĐỘNG (2 CỘT) --}}
+    <div class="order-detail-layout">
+        {{-- CỘT TRÁI: CẬP NHẬT TRẠNG THÁI --}}
+        <div class="order-detail-main">
+            <div class="admin-table-card">
                 <div class="card-header-custom card-header-primary">
                     <i class="fas fa-arrows-rotate"></i>
                     <h3 class="card-title">Cập nhật Trạng thái</h3>
@@ -181,8 +180,10 @@
                     </form>
                 </div>
             </div>
-            
-            {{-- NÚT DUYỆT / HỦY (Chỉ hiện khi đang chờ) --}}
+        </div>
+
+        {{-- CỘT PHẢI: HÀNH ĐỘNG DUYỆT/HỦY --}}
+        <div class="order-detail-sidebar">
             @if($order->status == 'pending')
                 <div class="admin-table-card">
                     <div class="card-header-custom card-header-warning">
@@ -209,6 +210,18 @@
                                 </button>
                             </form>
                         </div>
+                    </div>
+                </div>
+            @else
+                <div class="admin-table-card">
+                    <div class="card-header-custom">
+                        <i class="fas fa-info-circle"></i>
+                        <h3 class="card-title">Thông báo</h3>
+                    </div>
+                    <div class="card-body-custom">
+                        <p style="text-align: center; color: #666; padding: 20px 0;">
+                            Đơn hàng đã được xử lý
+                        </p>
                     </div>
                 </div>
             @endif

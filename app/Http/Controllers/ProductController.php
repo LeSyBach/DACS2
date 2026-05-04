@@ -7,9 +7,60 @@ use App\Models\Product;
 
 class ProductController extends Controller
 {
-    public function index(){
-        $products = Product::allProducts()->paginate(12);
-        return view('product', compact('products'));
+    public function index(Request $request){
+        $query = Product::allProducts();
+        
+        // Filter theo category
+        if ($request->has('category') && $request->category != '') {
+            $query->where('category_id', $request->category);
+        }
+        
+        // Filter theo khoảng giá
+        if ($request->has('price_range') && $request->price_range != '') {
+            switch ($request->price_range) {
+                case '1': // Dưới 5 triệu
+                    $query->where('price', '<', 5000000);
+                    break;
+                case '2': // 5-10 triệu
+                    $query->whereBetween('price', [5000000, 10000000]);
+                    break;
+                case '3': // 10-20 triệu
+                    $query->whereBetween('price', [10000000, 20000000]);
+                    break;
+                case '4': // 20-30 triệu
+                    $query->whereBetween('price', [20000000, 30000000]);
+                    break;
+                case '5': // Trên 30 triệu
+                    $query->where('price', '>', 30000000);
+                    break;
+            }
+        }
+        
+        // Sắp xếp
+        if ($request->has('sort') && $request->sort != '') {
+            switch ($request->sort) {
+                case 'price_asc':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price_desc':
+                    $query->orderBy('price', 'desc');
+                    break;
+                case 'name_asc':
+                    $query->orderBy('name', 'asc');
+                    break;
+                case 'name_desc':
+                    $query->orderBy('name', 'desc');
+                    break;
+                case 'newest':
+                    $query->orderBy('created_at', 'desc');
+                    break;
+            }
+        }
+        
+        $products = $query->paginate(12);
+        $categories = \App\Models\Category::all();
+        
+        return view('product', compact('products', 'categories'));
     }
 
     // Tìm kiếm sản phẩm

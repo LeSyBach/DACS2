@@ -8,6 +8,7 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +95,12 @@ Route::get('/products/search', [ProductController::class, 'search'])->name('prod
 
 // Chi tiết sản phẩm
 Route::get('/san-pham/{id}', [ProductController::class, 'detail'])->name('product.detail');
+
+// Reviews
+Route::get('/product/{id}/review/create', [ReviewController::class, 'create'])->name('review.create');
+Route::post('/product/{id}/review', [ReviewController::class, 'store'])->name('review.store');
+Route::get('/product/{id}/can-review', [ReviewController::class, 'canReview'])->name('review.can_review');
+Route::delete('/review/{id}', [ReviewController::class, 'destroy'])->name('review.destroy');
 
 // Giỏ hàng
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');

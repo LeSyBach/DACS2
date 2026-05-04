@@ -108,8 +108,8 @@ class UserProfileController extends Controller
             /** @var \App\Models\User $user */
             $user = Auth::user();
             
-            // Tìm đơn hàng của user
-            $order = $user->orders()->findOrFail($id);
+            // Tìm đơn hàng của user và load items với variant
+            $order = $user->orders()->with('items.variant')->findOrFail($id);
             
             Log::info('Order found', [
                 'order_id' => $order->id,
@@ -130,6 +130,35 @@ class UserProfileController extends Controller
             // Lưu lý do hủy nếu có
             if ($request->has('reason') && !empty($request->reason)) {
                 $order->note = ($order->note ? $order->note . "\n\n" : '') . 'Lý do hủy: ' . $request->reason;
+            }
+            
+            // HOÀN LẠI SỐ LƯỢNG SẢN PHẨM/BIẾN THỂ
+            foreach ($order->items as $item) {
+                if ($item->variant_id) {
+                    // Nếu có biến thể → hoàn lại stock của variant
+                    $variant = \App\Models\ProductVariant::find($item->variant_id);
+                    if ($variant) {
+                        $variant->stock += $item->quantity;
+                        $variant->save();
+                        Log::info('Restored variant stock', [
+                            'variant_id' => $variant->id,
+                            'quantity' => $item->quantity,
+                            'new_stock' => $variant->stock
+                        ]);
+                    }
+                } else {
+                    // Nếu không có biến thể → hoàn lại quantity của product
+                    $product = \App\Models\Product::find($item->product_id);
+                    if ($product) {
+                        $product->quantity += $item->quantity;
+                        $product->save();
+                        Log::info('Restored product quantity', [
+                            'product_id' => $product->id,
+                            'quantity' => $item->quantity,
+                            'new_quantity' => $product->quantity
+                        ]);
+                    }
+                }
             }
             
             $order->save();

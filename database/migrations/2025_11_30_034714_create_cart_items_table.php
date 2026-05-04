@@ -25,12 +25,19 @@ return new class extends Migration
             $table->foreignId('product_id')
                   ->constrained('products') // Tên bảng products
                   ->onDelete('cascade');
+            
+            // Thêm cột variant_id để hỗ trợ biến thể sản phẩm
+            $table->foreignId('variant_id')
+                  ->nullable()
+                  ->constrained('product_variants')
+                  ->onDelete('cascade');
                   
             $table->integer('quantity'); // Số lượng sản phẩm
             $table->timestamps();
             
-            // YÊU CẦU DUY NHẤT: Đảm bảo một người dùng chỉ có một mục cho một sản phẩm cụ thể
-            $table->unique(['user_id', 'product_id']); 
+            // YÊU CẦU DUY NHẤT: Đảm bảo mỗi user chỉ có một mục cho mỗi product + variant
+            // Mỗi biến thể của cùng sản phẩm sẽ là một cart item riêng
+            $table->unique(['user_id', 'product_id', 'variant_id']); 
         });
     }
 

@@ -169,5 +169,37 @@ class Product extends Model
 
         return number_format($min, 0, ',', '.') . '₫ - ' . number_format($max, 0, ',', '.') . '₫';
     }
+
+    /**
+     * Relationship với reviews
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Lấy reviews đã được approve
+     */
+    public function approvedReviews()
+    {
+        return $this->hasMany(Review::class)->where('status', 'approved');
+    }
+
+    /**
+     * Tính rating trung bình
+     */
+    public function getAverageRatingAttribute()
+    {
+        return round($this->approvedReviews()->avg('rating') ?? 0, 1);
+    }
+
+    /**
+     * Đếm số lượng reviews
+     */
+    public function getReviewCountAttribute()
+    {
+        return $this->approvedReviews()->count();
+    }
     
 }

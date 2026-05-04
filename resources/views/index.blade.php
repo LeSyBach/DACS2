@@ -8,6 +8,6 @@
     @include('home.hero')
     @include('home.category-section')
     @include('home.featured-products')
-    @include('home.product-all')
+    @include('home.product-all', ['showFilter' => false])
 
 @endsection
